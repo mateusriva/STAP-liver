@@ -1,0 +1,126 @@
+Running SVM experiment for window (7, 7, 5), with 80 components
+# Loading DICOM folder data/Caso 1/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Caso 1/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Caso 1/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Caso 1/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Caso 1/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Caso 1/Caso 1 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loaded 1 masks.
+# Loading DICOM folder data/Caso 2/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Caso 2/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Caso 2/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Caso 2/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Caso 2/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Caso 2/Caso 2 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loading NRRD file data/Caso 2/Caso 2 - Liver T2.seg.nrrd
+# Loaded mask t2-liver
+# Loaded 2 masks.
+# Loading DICOM folder data/Caso 3/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Caso 3/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Caso 3/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Caso 3/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Caso 3/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Caso 3/Caso 3 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loading NRRD file data/Caso 3/Caso 3 - Liver T2.seg.nrrd
+# Loaded mask t2-liver
+# Loaded 2 masks.
+# Loading DICOM folder data/Nl 1/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Nl 1/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Nl 1/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Nl 1/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Nl 1/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Nl 1/NI1 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loading NRRD file data/Nl 1/NI1 - Liver T2.seg.nrrd
+# Loaded mask t2-liver
+# Loaded 2 masks.
+# Loading DICOM folder data/Nl 2/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Nl 2/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Nl 2/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Nl 2/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Nl 2/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Nl 2/NI2 - Liver T2.seg.nrrd
+# Loaded mask t2-liver
+# Loading NRRD file data/Nl 2/NI2 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loaded 2 masks.
+# Loading DICOM folder data/Nl 3/Dixon1
+# Loaded volume Dixon1
+# Loading DICOM folder data/Nl 3/Dixon2
+# Loaded volume Dixon2
+# Loading DICOM folder data/Nl 3/Dixon3
+# Loaded volume Dixon3
+# Loading DICOM folder data/Nl 3/Dixon4
+# Loaded volume Dixon4
+# Loading DICOM folder data/Nl 3/T2
+# Loaded volume T2
+# Loaded 5 volumes.
+# Loading NRRD file data/Nl 3/NI3 - Liver mDIXON.seg.nrrd
+# Loaded mask dixon-liver
+# Loaded 1 masks.
+# Aligning Caso 1
+# Aligning Caso 2
+# Aligning Caso 3
+# Aligning Nl 1
+# Aligning Nl 2
+# Aligning Nl 3
+Total of patches: 71430
+Non-target patches: 64833 (90.76%)
+    Target patches: 6597 (9.24%)
+None
+Loaded dataset in 24.357s
+Extracting the top 80 PCA components from 53572 elements
+done in 14.243s
+Projecting the input data on the eigenfaces orthonormal basis
+done in 0.760s
+Fitting the classifier to the training set
+done in 23726.457s
+Best estimator found by grid search:
+SVC(C=1000.0, cache_size=200, class_weight='balanced', coef0=0.0,
+  decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False)
+Predicting bg/fg patches in the test set
+done in 91.838s
+             precision    recall  f1-score   support
+
+          0       0.97      0.99      0.98     16189
+          1       0.88      0.71      0.79      1669
+
+avg / total       0.96      0.96      0.96     17858
+
+[[16033   156]
+ [  479  1190]]
