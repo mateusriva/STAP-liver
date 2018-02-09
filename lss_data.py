@@ -6,6 +6,7 @@ Author:
 """
 
 import os
+import random
 import numpy as np
 import dicom
 import nrrd
@@ -172,3 +173,33 @@ def patch_dataset(dataset, window, step=None):
 
     patch_stats = {"total": sum(patches_count), "per_class": patches_count}
     return patches, patch_stats
+
+def assemble_initial_train_set(X, y, initial_train_size):
+    """
+    Assembles a class-balanced initial training set from the full set.
+    """
+    feature_count = X.shape[1]
+    # Initializing train set as numpy arrays
+    X_train, y_train = np.empty((initial_train_size*2, feature_count)), np.empty((initial_train_size*2))
+
+    # Shuffling dataset for sampling
+    shuffled_indexes = list(range(len(y)))
+    random.shuffle(shuffled_indexes)
+
+    # Building balanced starting trainset (TODO: update this for multiclass)
+    fg_added, bg_added = 0, 0
+    for index in shuffled_indexes:
+      if y[index] == 0:
+        if bg_added < initial_train_size:
+          X_train[bg_added] = X[index]
+          y_train[bg_added] = y[index]
+          bg_added += 1
+      if y[index] == 1:
+        if fg_added < initial_train_size:
+          X_train[fg_added] = X[index]
+          y_train[fg_added] = y[index]
+          fg_added += 1
+      if fg_added >= initial_train_size and bg_added >= initial_train_size:
+        break
+
+    return X_train, y_train

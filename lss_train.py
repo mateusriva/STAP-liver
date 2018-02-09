@@ -11,6 +11,12 @@ from itertools import chain
 from time import time
 import numpy as np
 import optparse
+import random
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
 
 import lss_data, lss_features, lss_util
 printv = lss_util.printv
@@ -71,6 +77,7 @@ printv("Done in {:.3f}s. Loaded {} patients.".format(time()-t0, len(raw_dataset)
 
 ################################################################
 # Assembling dataset of patches
+t0 = time()
 printv("Dividing dataset into patches of size {}... ".format(window_size), end="", flush=True)
 
 patch_dataset, patch_stats = lss_data.patch_dataset(raw_dataset, window_size)
@@ -84,14 +91,49 @@ print("    Target patches: {} ({:.2f}%)".format(patch_stats['per_class'][1], (pa
 
 ################################################################
 # Extracting features
+t0 = time()
 printv("Extracting features {}... ".format(features_string), end="", flush=True)
 
-feature_dataset = lss_features.extract_features(patch_dataset, features_string)
+feature_dataset, feature_count = lss_features.extract_features(patch_dataset, features_string)
 
-printv("Done in {:.3f}s. {} features extracted.".format(time()-t0, len(feature_dataset[0]['features'])))
+printv("Done in {:.3f}s. {} features extracted.".format(time()-t0, feature_count))
 
 ################################################################
 # Assembling training and test sets
+t0 = time()
+printv("Assembling full test set... ", end="", flush=True)
+
+# Initializing full X set as an empty numpy array of shape (examples, features)
+X = np.empty((len(feature_dataset), feature_count))
+# Copying feature dataset to X
+for i, element in enumerate(feature_dataset):
+    X[i,:] = element['features']
+
+# Initializing full y set as an empty numpy array of shape (examples)
+y = np.empty((len(feature_dataset)))
+# Copying feature dataset to y
+for i, element in enumerate(feature_dataset):
+    y[i] = element['target']
+
+printv("Done in {:.3f}s. 'X' has shape {}; 'y' has shape {}.".format(time()-t0, X.shape, y.shape))
+
+# Assembling the training set
+t0 = time()
+printv("Assembling training set... ", end="", flush=True)
+
+# Initializing train set as numpy arrays
+X_train, y_train = lss_data.assemble_initial_train_set(X, y, initial_train_size)
+
+printv("Done in {:.3f}s. 'X_train' has shape {}; 'y_train' has shape {}.".format(time()-t0, X_train.shape, y_train.shape))
+
+# Computing PCA for full dataset
+# TODO: PCA over whole dataset optional?
+t0 = time()
+printv("Computing PCA with {} components... ".format(pca_components_total), end="", flush=True)
+
+pca = PCA(n_components=pca_components_total, svd_solver='randomized', whiten=True).fit(X)
+
+printv("Done in {:.3f}s.".format(time()-t0))
 
 ################################################################
 # Training the SVM

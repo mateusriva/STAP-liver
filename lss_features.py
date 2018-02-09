@@ -27,12 +27,14 @@ def extract_features(patch_dataset, features_string):
     -------
     * dataset: list
         List of patches with extracted feature vectors
+    * feature_count: int
+        Total of extracted features
     """
     # Extracting and appending features to each individual patch
     for patch in patch_dataset:
-        patch['features'] = extract_features_from_patch(patch, features_string)
+        patch['features'], feature_count = extract_features_from_patch(patch, features_string)
 
-    return patch_dataset
+    return patch_dataset, feature_count
 
 
 def extract_features_from_patch(patch, features_string):
@@ -66,7 +68,7 @@ def extract_features_from_patch(patch, features_string):
 
     # Converting features to a flat array
     features = np.concatenate(features).flatten()
-    return features
+    return features, len(features)
 
 
 def get_feature_function(feature_identifier):
