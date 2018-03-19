@@ -26,13 +26,37 @@ class SRG:
     adjacency_matrix : ndarray of :obj:`Edge`
         Adjacency matrix, connecting vertexes with edge 
         information.
+    statistical_attributes : `list` of str
+        List of statistical attributes' keys.
+    relational_attributes : `list` of str
+        List of relational attributes' keys.
     """
     def __init__(self, vertexes, adjacency_matrix):
         self.vertexes = vertexes
         self.adjacency_matrix = adjacency_matrix
 
+        self.statistical_attributes = list(vertexes[0].attributes.keys())
+        self.relational_attributes = list(adjacency_matrix[0][0].attributes.keys())
+
     def __repr__(self):
-        return "SRG with {} vertexes and {} edges".format(len(self.vertexes), self.adjacency_matrix.shape)
+        return "SRG with {} vertexes and {} edges\nStat attrs: {}; Rel attrs: {}".format(len(self.vertexes), self.adjacency_matrix.shape, self.statistical_attributes, self.relational_attributes)
+
+    def dump(self):
+        """Dump this SRG to string."""
+        dump_string = "'SRG':{{'statistical_attributes':{},'relational_attributes':{},".format(self.statistical_attributes, self.relational_attributes)
+        dump_string += "'vertexes':{{"
+        for i, vertex in enumerate(self.vertexes):
+            dump_string += "{{{} : {}}}".format(i, vertex.dump())
+            if i < len(self.vertexes)-1:
+                dump_string += ","
+        dump_string += "}}, 'edges':{{"
+        for i, line in enumerate(self.adjacency_matrix):
+            for j, edge in enumerate(line):
+                dump_string += "{{{},{} : {}}}".format(i,j, edge.dump())
+                if i < self.adjacency_matrix.shape[0]-1 or j < self.adjacency_matrix.shape[1]-1:
+                    dump_string += ","
+        dump_string += "}} }}"
+        return dump_string
 
     @classmethod
     def build_from_labelmap(cls, patient):
@@ -96,6 +120,46 @@ class Vertex:
     def __repr__(self):
         return "Vertex {} with attributes {}".format(self.id, self.attributes)
 
+    def dump(self):
+        """Dump this Vertex to string."""
+        return "'Vertex':{{'id':{},'attributes':{}}}".format(self.id, self.attributes)
+
+    def cost_to(self, other, weights=None):
+        """Computes the cost between this `Vertex` and another.
+
+        This functions computes the matching cost (as the
+        Euclidean distance between attributes) of two
+        vertexes.
+
+        Arguments
+        ---------
+        other : :obj:`Vertex`
+            `Vertex` to compute distance to. Must have the same
+            attributes as `self`.
+        weights : `list` of `float`
+            Weight of each attribute. If None, weights are equal.
+
+        Returns
+        -------
+        cost : `float`
+            Matching cost between vertexes. 
+        """
+        # Asserting same attributes
+        assert self.attributes.keys() == other.attributes.keys(), "Vertexes must have same attributes for matching cost"
+
+        # Equal weights if default
+        if weights is None:
+            weights = np.ones((len(self.attributes),))
+
+        # Computing euclidean distances per attributes
+        distances = np.empty((len(self.attributes)),)
+        for i, attribute_key in enumerate(self.attributes.keys()):
+            distances[i] = np.linalg.norm(np.array(self.attributes[attribute_key]) - np.array(other.attributes[attribute_key]))
+
+        # weighting distances
+        cost = np.sum(weights * distances)/np.sum(weights)
+        return cost
+
 class Edge:
     """A Edge of the :class:`SRG`.
 
@@ -118,6 +182,46 @@ class Edge:
     def __repr__(self):
         return "Edge {} with attributes {}".format(self.id, self.attributes)
 
+    def dump(self):
+        """Dump this Edge to string."""
+        return "'Edge':{{'id':{},'attributes':{}}}".format(self.id, self.attributes)
+
+    def cost_to(self, other, weights=None):
+        """Computes the cost between this `Edge` and another.
+
+        This functions computes the matching cost (as the
+        Euclidean distance between attributes) of two
+        Edges.
+
+        Arguments
+        ---------
+        other : :obj:`Edge`
+            `Edge` to compute distance to. Must have the same
+            attributes as `self`.
+        weights : `list` of `float`
+            Weight of each attribute. If None, weights are equal.
+
+        Returns
+        -------
+        cost : `float`
+            Matching cost between Edges. 
+        """
+        # Asserting same attributes
+        assert self.attributes.keys() == other.attributes.keys(), "Edges must have same attributes for matching cost"
+
+        # Equal weights if default
+        if weights is None:
+            weights = np.ones((len(self.attributes),))
+
+        # Computing euclidean distances per attributes
+        distances = np.empty((len(self.attributes)),)
+        for i, attribute_key in enumerate(self.attributes.keys()):
+            distances[i] = np.linalg.norm(np.array(self.attributes[attribute_key]) - np.array(other.attributes[attribute_key]))
+
+        # weighting distances
+        cost = np.sum(weights * distances)/np.sum(weights)
+        return cost
+
 
 
 
@@ -138,13 +242,12 @@ if __name__ == '__main__':
 
 
     print(model_graph)
-    for i, vertex in enumerate(model_graph.vertexes):
-        print("Reporting on vertex {}\n---------------------".format(i))
-        print(vertex)
-        for edge in model_graph.adjacency_matrix[i,:]:
-            print(edge)
-
-        print("")
+    #for i, vertex in enumerate(model_graph.vertexes):
+    #    print("Reporting on vertex {}\n---------------------".format(i))
+    #    print(vertex)
+    #    for edge in model_graph.adjacency_matrix[i,:]:
+    #        print(edge)
+    #    print("")
 
 
     print("Running watershed... ", end="", flush=True)
@@ -157,15 +260,16 @@ if __name__ == '__main__':
     t0 = time()
     observed_patient = model_patient
     observed_patient.labelmaps['t2'] = watershed_labelmap
-    watershed_graph = SRG.build_from_labelmap(observed_patient)
+    observation_graph = SRG.build_from_labelmap(observed_patient)
     print("Done. {:.4f}s".format(time()-t0))
 
+    print(observation_graph)
+    #for i, vertex in enumerate(observation_graph.vertexes[:2]):
+    #    print("Reporting on vertex {}\n---------------------".format(i))
+    #    print(vertex)
+    #    for edge in observation_graph.adjacency_matrix[i,:2]:
+    #        print(edge)
+    #    print("")
 
-    print(watershed_graph)
-    for i, vertex in enumerate(watershed_graph.vertexes[:2]):
-        print("Reporting on vertex {}\n---------------------".format(i))
-        print(vertex)
-        for edge in watershed_graph.adjacency_matrix[i,:2]:
-            print(edge)
-
-        print("")
+    #print(model_graph.dump(), file=open("model_graph.srg", "w"))
+    #print(observation_graph.dump(), file=open("observation_graph.srg", "w"))
