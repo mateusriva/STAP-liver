@@ -53,8 +53,8 @@ def compute_volumetry(patient):
     volumetry = {}
     for label, voxel_count in zip(labels, voxel_count_per_labels):
         volumetry[label] = {"voxel": voxel_count,
-                            "real": voxel_count*np.prod(volume.header["spacings"]),
-                            "relative": voxel_count*np.prod(volume.header["spacings"])/patient.total_volume["real"]}
+                            "real": voxel_count*volume.voxel_volume,
+                            "relative": voxel_count*volume.voxel_volume/patient.total_volume["real"]}
 
     return volumetry
 
@@ -134,7 +134,7 @@ def compute_mean_intensities(patient):
     mean_intensities = {}
     for label in labels:
         mean_intensities[label] = {"real": np.mean(volume.data.flatten()[indexes==label])}
-        mean_intensities[label]["relative"] = (mean_intensities[label]["real"]-np.min(volume.data))/(np.max(volume.data)-np.min(volume.data))
+        mean_intensities[label]["relative"] = (mean_intensities[label]["real"]-volume.data_min)/(volume.data_max-volume.data_min)
 
     return mean_intensities
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
         print("{}: {}".format(key, centroids[key]))
 
     # Testing mean_intensity
-    print("Patient min/max intensities:",np.min(patient.volumes['t2'].data), np.max(patient.volumes['t2'].data))
+    print("Patient min/max intensities:",patient.volumes['t2'].data_min, patient.volumes['t2'].data_max)
     print("Patient mean_intensities:\n----------------")
     mean_intensities = compute_mean_intensities(patient)
     for key in mean_intensities:
