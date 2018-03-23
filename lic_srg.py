@@ -7,6 +7,7 @@ the implementation is consolidated.
 """
 
 import numpy as np
+from itertools import permutations
 
 import lic_patient, lic_attributes
 
@@ -59,7 +60,7 @@ class SRG:
         return dump_string
 
     @classmethod
-    def build_from_labelmap(cls, patient):
+    def build_from_patient(cls, patient):
         """Builds a SRG from a set of annotated patients.
 
         (TODO: multiple patients, currently only one)
@@ -222,9 +223,62 @@ class Edge:
         cost = np.sum(weights * distances)/np.sum(weights)
         return cost
 
+class Matching:
+    """Contains a matching solution between SRGs.
 
+    A matching solution is an injective mapping
+    between the vertexes of an observation graph
+    and the vertexes of the model graph.
 
+    This is represented as a dictionary, where
+    each key is a vertex in the observation graph
+    and each value is the matched model vertex.
 
+    Attributes
+    ----------
+    match_dict : `dict`
+        Matching dictionary between vertexes.
+    model_graph : `SRG`
+        Model graph to match against.
+    observation_graph : `SRG`
+        Observation graph to be matched.
+    """
+    def __init__(self, match_dict, model_graph, observation_graph):
+        self.match_dict = match_dict
+        self.model_graph = model_graph
+        self.observation_graph = observation_graph
+
+    def cost(self, weights=None):
+        """Computes the global cost of this solution.
+
+        Two weights may be provided: respectively,
+        the weight of the vertex total distance and
+        the weight of the edge total distance.
+
+        Arguments
+        ---------
+        weights : `tuple` of two `floats`
+            Weights for vertex distance sum and
+            edge distance sum, respectively. If
+            `None`, weights are equal.
+
+        Returns
+        -------
+        cost : `float`
+            Global cost of the solution, weighted.
+        """
+        if weights is None:
+            weights = (1,1)
+
+        # Computing all vertex distances
+        vertex_distances = sum(self.observation_graph.vertexes[key].cost_to(self.model_graph.vertexes[value]) for key, value in self.match_dict.items())
+        # Computing all edge distances
+        edge_distances = sum(
+            self.observation_graph.adjacency_matrix[pair1[0],pair2[0]]
+            .cost_to(self.model_graph.adjacency_matrix[pair1[1],pair2[1]]) 
+            for pair1, pair2 in permutations(self.match_dict.items(), 2) 
+                if pair1[0] < pair2[0])
+        return (weights[0]*(vertex_distances) + weights[1]*(edge_distances))/np.sum(weights)
 
 if __name__ == '__main__':
     from time import time
@@ -237,7 +291,7 @@ if __name__ == '__main__':
 
     print("Building model graph... ", end="", flush=True)
     t0 = time()
-    model_graph = SRG.build_from_labelmap(model_patient)
+    model_graph = SRG.build_from_patient(model_patient)
     print("Done. {:.4f}s".format(time()-t0))
 
 
@@ -260,7 +314,7 @@ if __name__ == '__main__':
     t0 = time()
     observed_patient = model_patient
     observed_patient.labelmaps['t2'] = watershed_labelmap
-    observation_graph = SRG.build_from_labelmap(observed_patient)
+    observation_graph = SRG.build_from_patient(observed_patient)
     print("Done. {:.4f}s".format(time()-t0))
 
     print(observation_graph)
@@ -273,3 +327,53 @@ if __name__ == '__main__':
 
     #print(model_graph.dump(), file=open("model_graph.srg", "w"))
     #print(observation_graph.dump(), file=open("observation_graph.srg", "w"))
+
+    # Generate random matching solution
+    import random
+
+    print("Generating random solution... ", end="", flush=True)
+    t0 = time()
+    possible_options = len(model_graph.vertexes)
+    match_dict = {}
+    for i, vertex in enumerate(observation_graph.vertexes):
+        match_dict[i] = random.randint(0, possible_options-1)
+    print("Done. {:.4f}s".format(time()-t0))
+
+    print("Computing cost... ", end="", flush=True)
+    solution = Matching(match_dict, model_graph, observation_graph)
+    cost = solution.cost()
+    print("Done. Cost is {}. {:.4f}s".format(cost, time()-t0))
+
+    # displaying random solution
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    from lic_display import display_solution, label_color_map, label_text_map
+    plt.title("Random solution. Cost is {:.2f}".format(cost))
+    plt.imshow(display_solution(observed_patient.volumes['t2'].data[:,:,36], observed_patient.labelmaps['t2'].data[:,:,36], solution.match_dict, window_wl=(700,300)))
+    patches = [mpatches.Patch(color=value, label=label_text_map[key]) for key,value in label_color_map.items()]
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    plt.show()
+
+    # generating greedy solution
+    # TODO: move this to a "lic_solution" module?
+    print("Generating greedy solution... ", end="", flush=True)
+    t0 = time()
+    # creating empty match dict
+    match_dict = {}
+    # for each vertex in the observation graph, find the closest matched model vertex (ignore edge info)
+    for i, obs_vertex in enumerate(observation_graph.vertexes):
+        best_model_vertex = np.argmin([obs_vertex.cost_to(model_vertex) for model_vertex in model_graph.vertexes])
+        match_dict[i] = best_model_vertex
+    print("Done. {:.4f}s".format(time()-t0))
+
+    print("Computing cost... ", end="", flush=True)
+    solution = Matching(match_dict, model_graph, observation_graph)
+    cost = solution.cost()
+    print("Done. Cost is {}. {:.4f}s".format(cost, time()-t0))
+
+    # displaying greedy solution
+    plt.title("Greedy solution. Cost is {:.2f}".format(cost))
+    plt.imshow(display_solution(observed_patient.volumes['t2'].data[:,:,36], observed_patient.labelmaps['t2'].data[:,:,36], solution.match_dict, window_wl=(700,300)))
+    patches = [mpatches.Patch(color=value, label=label_text_map[key]) for key,value in label_color_map.items()]
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+    plt.show()

@@ -187,7 +187,7 @@ class Volume:
 
         Returns
         -------
-        voxel_volume : `int`
+        voxel_volume : `float`
             Volume of a single voxel. Result of np.prod(volume.header["spacings"])
         """
         if self._voxel_volume:

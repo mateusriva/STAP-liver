@@ -34,6 +34,25 @@ label_color_map = {
 }
 """dict: mapping of voxel label to visualization color."""
 
+label_text_map = {
+    0: "Background",
+    1: "Vena Cava",
+    2: "Portal Vein",
+    3: "Left Hepatic Vein",
+    4: "Middle Hepatic Vein",
+    5: "Right Hepatic Vein",
+    6: "Segment I",
+    7: "Segment II",
+    8: "Segment III",
+    9: "Segment IVa",
+    10: "Segment IVb",
+    11: "Segment V",
+    12: "Segment VI",
+    13: "Segment VII",
+    14: "Segment VIII"
+}
+"""dict: mapping of voxel label to text label."""
+
 def overlay_labeled_slice(volume_slice, labelmap_slice, label_opacity=1.0, window_wl=None):
     """Overlays a labelmap on a slice with given opacity.
     """
@@ -60,6 +79,47 @@ def overlay_labeled_slice(volume_slice, labelmap_slice, label_opacity=1.0, windo
     for x,row in enumerate(labelmap_slice):
         for y,pixel in enumerate(row):
             color_slice[x,y] = label_color_map[pixel]
+    color_slice = color.rgb2hsv(color_slice)
+
+    # Replacing hue and saturation of original image with that of color mask
+    # Source: https://stackoverflow.com/a/9204506
+    display_slice[..., 0] = color_slice[..., 0]
+    display_slice[..., 1] = color_slice[..., 1] * label_opacity
+    display_slice = color.hsv2rgb(display_slice)
+
+    # Hack: if opacity is 1, simply replace values in the image
+    # (otherwise, it will never achieve full opacity)
+    if label_opacity >= 1.0:
+        color_slice = color.hsv2rgb(color_slice)
+        display_slice[labelmap_slice > 0] = color_slice[labelmap_slice > 0]
+
+    return display_slice
+
+def display_solution(volume_slice, labelmap_slice, match_dict, label_opacity=1.0, window_wl=None):
+    """Overlays a watershed+solution on a slice."""
+    assert len(volume_slice.shape) == 2, "volume slice is not 2D"
+    assert len(labelmap_slice.shape) == 2, "label slice is not 2D"
+
+    if window_wl is not None:
+        width, level = window_wl
+    else:
+        width, level = np.max(volume_slice), 0
+
+    # Normalizing image to window level
+    display_slice = volume_slice.astype(float)
+    display_slice = (display_slice-(level-(width/2)))/(width)
+    display_slice[display_slice < 0.0] = 0.0
+    display_slice[display_slice > 1.0] = 1.0
+
+    # Building RGB image from gray-slice and converting to HSV
+    display_slice = display_slice.repeat(3,1).reshape((display_slice.shape[0], display_slice.shape[1], 3))
+    display_slice = color.rgb2hsv(display_slice)
+
+    # building color slice from labelmap and converting to HSV
+    color_slice = np.empty((labelmap_slice.shape[0], labelmap_slice.shape[1], 3), dtype=float)
+    for x,row in enumerate(labelmap_slice):
+        for y,pixel in enumerate(row):
+            color_slice[x,y] = label_color_map[match_dict[pixel]]
     color_slice = color.rgb2hsv(color_slice)
 
     # Replacing hue and saturation of original image with that of color mask

@@ -1,0 +1,1 @@
+"""Script for checking if the SRGs are working with simple, toy images."""

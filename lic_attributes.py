@@ -133,6 +133,11 @@ def compute_mean_intensities(patient):
     # building mean intensity attribute list
     mean_intensities = {}
     for label in labels:
+        if (not any(indexes==label)): 
+            # skipping bugged labels
+            mean_intensities[label] = {"real": 0, "relative": 0}
+            continue
+
         mean_intensities[label] = {"real": np.mean(volume.data.flatten()[indexes==label])}
         mean_intensities[label]["relative"] = (mean_intensities[label]["real"]-volume.data_min)/(volume.data_max-volume.data_min)
 
