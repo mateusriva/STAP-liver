@@ -43,8 +43,8 @@ def compute_volumetry(patient):
         dict of volumetry information, keyed by label
     """
     # Acquiring the first labelmap of the patient (TODO: multiple labelmap support)
-    labelmap = patient.labelmaps['t2']
-    volume = patient.volumes['t2']
+    labelmap = next(iter(patient.labelmaps.values())) #patient.labelmaps['t2']
+    volume = next(iter(patient.volumes.values())) #patient.volumes['t2']
 
     # get sorted labels and voxel count per label
     labels,voxel_count_per_labels = np.unique(labelmap.data, return_counts=True)
@@ -83,8 +83,8 @@ def compute_centroids(patient):
         dict of centroid information, keyed by label
     """
     # Acquiring the first labelmap of the patient (TODO: multiple labelmap support)
-    labelmap = patient.labelmaps['t2']
-    volume = patient.volumes['t2']
+    labelmap = next(iter(patient.labelmaps.values())) #patient.labelmaps['t2']
+    volume = next(iter(patient.volumes.values())) #patient.volumes['t2']
 
     # get sorted labels and center-of-mass for each label
     labels = np.unique(labelmap.data)
@@ -124,8 +124,8 @@ def compute_mean_intensities(patient):
         dict of mean intensity information, keyed by label
     """
     # Acquiring the first labelmap of the patient (TODO: multiple labelmap support)
-    labelmap = patient.labelmaps['t2']
-    volume = patient.volumes['t2']
+    labelmap = next(iter(patient.labelmaps.values())) #patient.labelmaps['t2']
+    volume = next(iter(patient.volumes.values())) #patient.volumes['t2']
 
     # get sorted labels and indexes for each label
     labels, indexes = np.unique(labelmap.data, return_inverse=True)

@@ -32,6 +32,12 @@ class Patient:
         Dictionary of patient label maps, keyed by ID.
     """
     def __init__(self, id, volumes={}, labelmaps={}):
+        # Asserting datatypes are correct
+        for key, value in volumes.items():
+            assert type(value) is Volume, "Volume {} is not a `Volume` object".format(key)
+        for key, value in labelmaps.items():
+            assert type(value) is LabelMap, "LabelMap {} is not a `LabelMap` object".format(key)
+
         self.id = id
         self.volumes = volumes
         self.labelmaps = labelmaps
@@ -273,8 +279,8 @@ class Volume:
         # Labeling local_minima
         markers, total_markers = ndi.label(volume_local_minima)
 
-        # Running watershed
-        labels = watershed(magnitude, markers)
+        # Running watershed (since watershed is apparently 1-indexed, subtracting 1)
+        labels = watershed(magnitude, markers) - 1
 
         # Building labelmap header
         header = {"dimension": 3, "sizes": list(labels.shape), "type":"short", "kinds":["domain", "domain", "domain"], "endian":"little", "num_labels":total_markers}

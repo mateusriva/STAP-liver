@@ -66,8 +66,8 @@ class SRG:
         (TODO: multiple patients, currently only one)
 
         Attributes currently being considered:
-        > Statistical: voxel centroid, real intensity
-        > Relational: vectorial distance
+        > Statistical: voxel centroid, normalized intensity
+        > Relational: voxel vectorial distance
 
         Arguments
         ---------
@@ -82,7 +82,7 @@ class SRG:
         # Assembling the list of vertexes
         vertexes = []
         for label in centroids.keys():
-            new_vertex = Vertex(label, {"centroid":centroids[label]["voxel"], "mean_intensity": mean_intensities[label]["real"]})
+            new_vertex = Vertex(label, {"centroid":centroids[label]["voxel"], "mean_intensity": mean_intensities[label]["relative"]})
             vertexes.append(new_vertex)
 
         # Assembling the adjacency matrix
@@ -248,7 +248,7 @@ class Matching:
         self.model_graph = model_graph
         self.observation_graph = observation_graph
 
-    def cost(self, weights=None):
+    def cost(self, weights=None, vertex_weights=None, edge_weights=None):
         """Computes the global cost of this solution.
 
         Two weights may be provided: respectively,
@@ -261,6 +261,10 @@ class Matching:
             Weights for vertex distance sum and
             edge distance sum, respectively. If
             `None`, weights are equal.
+        vertex_weights : `list` of `float`
+            Weight of each Vertex attribute. If None, weights are equal.
+        edge_weights : `list` of `float`
+            Weight of each Edge attribute. If None, weights are equal.
 
         Returns
         -------
@@ -271,11 +275,11 @@ class Matching:
             weights = (1,1)
 
         # Computing all vertex distances
-        vertex_distances = sum(self.observation_graph.vertexes[key].cost_to(self.model_graph.vertexes[value]) for key, value in self.match_dict.items())
+        vertex_distances = sum(self.observation_graph.vertexes[key].cost_to(self.model_graph.vertexes[value], vertex_weights) for key, value in self.match_dict.items())
         # Computing all edge distances
         edge_distances = sum(
             self.observation_graph.adjacency_matrix[pair1[0],pair2[0]]
-            .cost_to(self.model_graph.adjacency_matrix[pair1[1],pair2[1]]) 
+            .cost_to(self.model_graph.adjacency_matrix[pair1[1],pair2[1]], edge_weights) 
             for pair1, pair2 in permutations(self.match_dict.items(), 2) 
                 if pair1[0] < pair2[0])
         return (weights[0]*(vertex_distances) + weights[1]*(edge_distances))/np.sum(weights)
