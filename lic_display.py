@@ -30,7 +30,7 @@ label_color_map = {
     11: (1,0.5,1),      # Segment V: light pink
     12: (0.5,0,0.5),    # Segment VI: purple
     13: (1,1,0),        # Segment VII: yellow
-    14: (1,0,1),        # Segment VIII: pink
+    14: (1,0,1)        # Segment VIII: pink
 }
 """dict: mapping of voxel label to visualization color."""
 
@@ -52,6 +52,90 @@ label_text_map = {
     14: "Segment VIII"
 }
 """dict: mapping of voxel label to text label."""
+
+
+bg3label_color_map = {
+    0: (0,0,0),         # Background posterior: black
+    1: (0.5,0.5,0.5),   # Background anterior: gray
+    2: (1,1,1),         # Background body: white
+    3: (0,0,1),         # Vena Cava: blue
+    4: (0,1,1),         # Portal Vein: light blue
+    5: (0.5,0,1),       # Left Hepatic Vein: purplish-blue
+    6: (0,0.5,1),       # Middle Hepatic Vein: light-but-not-so-much blue
+    7: (0,0,0.5),       # Right Hepatic Vein: dark blue
+    8: (1,0,0),         # Segment I: red
+    9: (1,0.5,0),       # Segment II: orange
+    10: (0.5,0.5,0),    # Segment III: dark gold
+    11: (0,1,0),        # Segment IVa: light green
+    12: (0,0.5,0),      # Segment IVb: dark green
+    13: (1,0.5,1),      # Segment V: light pink
+    14: (0.5,0,0.5),    # Segment VI: purple
+    15: (1,1,0),        # Segment VII: yellow
+    16: (1,0,1)        # Segment VIII: pink
+}
+"""dict: mapping of voxel label to visualization color, with background split."""
+
+bg3label_text_map = {
+    0: "Background Posterior",
+    1: "Background Anterior",
+    2: "Background Body",
+    3: "Vena Cava",
+    4: "Portal Vein",
+    5: "Left Hepatic Vein",
+    6: "Middle Hepatic Vein",
+    7: "Right Hepatic Vein",
+    8: "Segment I",
+    9: "Segment II",
+    10: "Segment III",
+    11: "Segment IVa",
+    12: "Segment IVb",
+    13: "Segment V",
+    14: "Segment VI",
+    15: "Segment VII",
+    16: "Segment VIII"
+}
+"""dict: mapping of voxel label to text label, with background split."""
+
+class IndexTracker(object):
+    """This class creates a 3D plot split by slices
+    which can be scrolled.
+    """
+    def __init__(self, ax, X, title="", **kwargs):
+        self.ax = ax
+
+        ax.set_title(title)
+
+        self.X = X
+        rows, cols, self.slices = X.shape
+        self.ind = self.slices//2
+
+        self.im = ax.imshow(self.X[:, :, self.ind], **kwargs)
+        self.update()
+
+    def onscroll(self, event):
+        #print("%s %s" % (event.button, event.step))
+        if event.button == 'up':
+            self.ind = (self.ind + 1) % self.slices
+        else:
+            self.ind = (self.ind - 1) % self.slices
+        self.update()
+
+    def update(self):
+        self.im.set_data(self.X[:, :, self.ind])
+        self.ax.set_ylabel('slice %s' % self.ind)
+        self.im.axes.figure.canvas.draw()
+
+def display_volume(X, **kwargs):
+    fig,ax=plt.subplots(1,1)
+    tracker = IndexTracker(ax, X, **kwargs)
+    fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
+    plt.show()
+def display_volumes(Xs, **kwargs):
+    fig,axes=plt.subplots(1,len(Xs))
+    trackers = [IndexTracker(ax, X, **kwargs) for ax,X in zip(axes,Xs)]
+    for tracker in trackers:
+        fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
+    plt.show()
 
 def overlay_labeled_slice(volume_slice, labelmap_slice, label_opacity=1.0, window_wl=None):
     """Overlays a labelmap on a slice with given opacity.
