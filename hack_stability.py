@@ -20,7 +20,7 @@ model_graph = SRG.build_from_patient(model_patient)
 # Parameters
 # ----------
 #seeds = [1]
-seeds = range(1) # seeds for experiments
+seeds = range(100) # seeds for experiments
 disturbances = 1000 # disturbance count
 
 # Results
@@ -109,7 +109,7 @@ plt.ylabel("Cost")
 plt.xlabel("Disturbances")
 plt.colorbar()
 plt.grid()
-plt.savefig("/home/riva/disturbance-cost.png")
+plt.savefig("plots/disturbance-cost.png")
 plt.clf()
 plt.scatter(range(disturbances), mean_accuracies, c=mean_costs)
 plt.title("Accuracy and Cost (as color) per disturbance")
@@ -117,14 +117,14 @@ plt.ylabel("Accuracy")
 plt.xlabel("Disturbances")
 plt.colorbar()
 plt.grid()
-plt.savefig("/home/riva/disturbance-acc.png")
+plt.savefig("plots/disturbance-acc.png")
 plt.clf()
 
 # Start mislabel experiments
 # Parameters
 # ----------
 #seeds = [1]
-seeds = range(1) # seeds for experiments
+seeds = range(100) # seeds for experiments
 mislabels = 150 # mislabel count
 
 # Results
@@ -202,7 +202,7 @@ plt.ylabel("Cost")
 plt.xlabel("Mislabels")
 plt.colorbar()
 plt.grid()
-plt.savefig("/home/riva/mislabel-cost.png")
+plt.savefig("plots/mislabel-cost.png")
 plt.clf()
 plt.scatter(range(mislabels), mean_accuracies, c=mean_costs)
 plt.title("Accuracy and Cost (as color) per mislabel")
@@ -210,5 +210,5 @@ plt.ylabel("Accuracy")
 plt.xlabel("Mislabels")
 plt.colorbar()
 plt.grid()
-plt.savefig("/home/riva/mislabel-acc.png")
+plt.savefig("plots/mislabel-acc.png")
 plt.clf()
