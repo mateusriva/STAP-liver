@@ -71,7 +71,7 @@ class Patient:
             volume = list(self.volumes.values())[0]
             # Count total of non-zero voxels
             self._total_volume = {"voxel": np.count_nonzero(volume.data[volume.data > 5])}
-            self._total_volume["real"] = self._total_volume["voxel"] * volume._voxel_volume
+            self._total_volume["real"] = self._total_volume["voxel"] * volume.voxel_volume
             self._total_volume["relative"] = 1
             return self._total_volume
 

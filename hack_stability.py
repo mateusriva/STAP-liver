@@ -7,7 +7,8 @@ from time import time
 from copy import deepcopy
 import matplotlib.pyplot as plt
 
-from lic_srg import SRG, Matching
+from lic_srg import SRG
+from lic_solution import Matching
 from lic_patient import Patient, Volume, LabelMap
 
 # Importing patient
@@ -19,7 +20,7 @@ model_graph = SRG.build_from_patient(model_patient)
 # Parameters
 # ----------
 #seeds = [1]
-seeds = range(100) # seeds for experiments
+seeds = range(1) # seeds for experiments
 disturbances = 1000 # disturbance count
 
 # Results
@@ -123,7 +124,7 @@ plt.clf()
 # Parameters
 # ----------
 #seeds = [1]
-seeds = range(100) # seeds for experiments
+seeds = range(1) # seeds for experiments
 mislabels = 150 # mislabel count
 
 # Results
