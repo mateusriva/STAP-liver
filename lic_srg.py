@@ -81,7 +81,7 @@ class SRG:
         # Assembling the list of vertexes
         vertexes = []
         for label in centroids.keys():
-            new_vertex = Vertex(label, {"centroid":centroids[label]["voxel"], "mean_intensity": mean_intensities[label]["relative"]})
+            new_vertex = Vertex(label, {"centroid":centroids[label]["real"], "mean_intensity": mean_intensities[label]["relative"]})
             vertexes.append(new_vertex)
 
         # Assembling the adjacency matrix
@@ -154,7 +154,14 @@ class Vertex:
         # Computing euclidean distances per attributes
         distances = np.empty((len(self.attributes)),)
         for i, attribute_key in enumerate(self.attributes.keys()):
+            print("cost between {} and {}".format(self, other))
+            print("computing distance for '{}'".format(attribute_key))
+            print("values are:\nself  {}\nother {}".format(self.attributes[attribute_key], other.attributes[attribute_key]))
             distances[i] = np.linalg.norm(np.array(self.attributes[attribute_key]) - np.array(other.attributes[attribute_key]))
+            print("distance is {}".format(distances[i]))
+
+        import sys
+        sys.exit()
 
         # weighting distances
         cost = np.sum(weights * distances)/np.sum(weights)

@@ -127,6 +127,10 @@ class Matching:
 
 if __name__ == '__main__':
     from time import time
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches, matplotlib.colors as mcolors
+    from lic_display import IndexTracker, display_volume, bg3label_color_map as label_color_map, bg3label_text_map as label_text_map
+    
 
     print("Loading a single patient... ", end="", flush=True)
     t0 = time()
@@ -151,7 +155,7 @@ if __name__ == '__main__':
     t0 = time()
     watershed_labelmap = model_patient.volumes['t2'].watershed_volume()
     print("Done. {} labels found. {:.4f}s".format(watershed_labelmap.header["num_labels"], time()-t0))
-
+    #display_volume(watershed_labelmap.data)
 
     print("Building observation graph... ", end="", flush=True)
     t0 = time()
@@ -161,26 +165,70 @@ if __name__ == '__main__':
     observation_graph = lic_srg.SRG.build_from_patient(observed_patient)
     print("Done. {:.4f}s".format(time()-t0))
 
-    # displaying greedy solution
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches, matplotlib.colors as mcolors
-    from lic_display import IndexTracker, display_volume, bg3label_color_map as label_color_map, bg3label_text_map as label_text_map
-    
     # generating greedy solution
-    # TODO: move this to a "lic_solution" module?
+    print("Generating greedy solution... ", end="", flush=True)
     t0 = time()
     # creating empty match dict
     match_dict = {}
     # for each vertex in the observation graph, find the closest matched model vertex (ignore edge info)
     for i, obs_vertex in enumerate(observation_graph.vertexes):
-        best_model_vertex = np.argmin([obs_vertex.cost_to(model_vertex) for model_vertex in model_graph.vertexes])
+        best_model_vertex = np.argmin([obs_vertex.cost_to(model_vertex, (0.01,0.99)) for model_vertex in model_graph.vertexes])
         match_dict[i] = best_model_vertex
     print("Done. {:.4f}s".format(time()-t0))
 
     print("Computing cost... ", end="", flush=True)
+    t0=time()
     solution = Matching(match_dict, model_graph, observation_graph)
-    cost = solution.cost(vertex_percentage=0.5,edge_percentage=0.5)
-    print("Done. Cost is {}. {:.4f}s".format(cost, time()-t0))
+    cost = solution.cost(vertex_percentage=0.2,edge_percentage=0.2)
+    print("Done. Cost is {:.2f}. {:.4f}s".format(cost, time()-t0))
+
+    # Greedy improvement
+    for improvement in range(4):
+        print("Performing greedy improvement #{}... ".format(improvement+1), end="", flush=True)
+        # Attempting to improve all vertices in the graph (TODO: heap order by cost)
+        for observation, current_prediction in match_dict.items():
+            # Computing cost of this prediction
+            sampled_vertexes = random.sample(range(len(observation_graph.vertexes)), int(0.2*len(observation_graph.vertexes))) #subsampling 20% of vertexes for edge computing
+            current_vertex_cost = observation_graph.vertexes[observation].cost_to(model_graph.vertexes[current_prediction], (0.01,0.99)) # COmputing veritical cost
+            current_edge_cost = np.sum(
+                observation_graph.adjacency_matrix[observation, other_vertex]
+                .cost_to(model_graph.adjacency_matrix[current_prediction, match_dict[other_vertex]])
+                for other_vertex in sampled_vertexes)
+            current_cost = 0.2*current_edge_cost + 0.8*current_vertex_cost
+
+            if observation == 221:
+                print("\n\tImproving vertex 221, currently matched to {}. Cost is {} + {} = {}".format(current_prediction, current_vertex_cost, current_edge_cost, current_cost))
+            #print("Improving vertex {} (currently {}). Cost is {:.1f} + {:.1f} = {:.1f}".format(observation, current_prediction, current_vertex_cost, current_edge_cost, current_cost))
+            # Attempting to improve this prediction
+            for i, potential_prediction in enumerate(model_graph.vertexes):
+                if i == current_prediction: continue # Skip same prediction
+                potential_vertex_cost = observation_graph.vertexes[observation].cost_to(potential_prediction, (0.02,0.98)) # COmputing veritical cost
+                potential_edge_cost = np.sum(list(
+                    observation_graph.adjacency_matrix[observation, other_vertex]
+                    .cost_to(model_graph.adjacency_matrix[i, match_dict[other_vertex]])
+                    for other_vertex in sampled_vertexes))
+                potential_cost = 0.2*potential_edge_cost + 0.8*potential_vertex_cost
+
+                if observation == 221 and i == 2:
+                    print("\tMatching to BGBody: Cost is {} + {} = {}".format(potential_vertex_cost, potential_edge_cost, potential_cost))
+
+                # Improving
+                if potential_cost < current_cost:
+                    current_cost = potential_cost
+                    match_dict[observation] = current_prediction = i
+                    #print("Improved vertex {} to {}. Cost is {:.1f} + {:.1f} = {:.1f}".format(observation, i, potential_vertex_cost, potential_edge_cost, potential_cost))
+        print("Done. {:.4f}s".format(time()-t0))
+
+
+
+        # Computing improved cost
+
+        print("Computing improved cost... ", end="", flush=True)
+        t0 = time()
+        solution = Matching(match_dict, model_graph, observation_graph)
+        cost = solution.cost(weights=(0.8,0.2),vertex_percentage=0.2,edge_percentage=0.2)
+        print("Done. Cost is {:.2f}. {:.4f}s".format(cost, time()-t0))
+
 
     # Assembling and displaying predicted labelmap
     predicted_labelmap = deepcopy(watershed_labelmap.data)

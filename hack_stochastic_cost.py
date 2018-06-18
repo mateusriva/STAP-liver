@@ -79,7 +79,7 @@ print("Time to compute cost: {:.4f}s".format(base_time))
 # Parameters
 # ----------
 #seeds = [1]
-seeds = range(3) # seeds for experiments
+seeds = range(100) # seeds for experiments
 percentages = np.linspace(1,0.1,10) # disturbance count
 
 # Results
@@ -130,6 +130,10 @@ mean_edge_costs = np.mean(all_edge_costs, 0)
 mean_vertex_costs = np.mean(all_vertex_costs, 0)
 mean_costs = np.mean(all_costs, 0)
 mean_times = np.mean(all_times, 0)
+std_edge_costs = np.std(all_edge_costs, 0)
+std_vertex_costs = np.std(all_vertex_costs, 0)
+std_costs = np.std(all_costs, 0)
+std_times = np.std(all_times, 0)
 
 fig, ax1 = plt.subplots()
 # Plotting a line representing real cost
@@ -137,14 +141,14 @@ ax1.plot(percentages, [base_cost]*len(percentages),"r-")
 ax1.plot(percentages, [base_vertex_cost]*len(percentages),"b-")
 ax1.plot(percentages, [base_edge_cost]*len(percentages),"g-")
 # Plotting computed costs per percentage
-ax1.plot(percentages, mean_costs, "r--", label="Global Costs")
-ax1.plot(percentages, mean_vertex_costs, "b--", label="Vertex Costs")
-ax1.plot(percentages, mean_edge_costs, "g--", label="Edge Costs")
+ax1.errorbar(percentages, mean_costs, std_costs, None, "r--", capsize=3, label="Global Costs")
+ax1.errorbar(percentages, mean_vertex_costs, std_vertex_costs, None, "b--", capsize=3, label="Vertex Costs")
+ax1.errorbar(percentages, mean_edge_costs, std_edge_costs, None, "g--", capsize=3, label="Edge Costs")
 ax1.set_ylabel("Cost")
 
 ax2 = ax1.twinx()
 ax2.plot(percentages, [base_time]*len(percentages),"c-")
-ax2.plot(percentages, mean_times, "c--", label="Time")
+ax2.errorbar(percentages, mean_times, std_times, None, "c--", capsize=3, label="Time")
 ax2.set_ylabel("Seconds")
 
 ax1.set_xlabel("Percentage")

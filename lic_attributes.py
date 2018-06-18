@@ -97,6 +97,13 @@ def compute_centroids(patient):
                             "real": [(centroid[i]*volume.header["spacings"][i])+volume.header["initial_position"][i] for i in range(len(centroid))],
                             "relative": [centroid[i]/volume.data.shape[i] for i in range(len(centroid))]}
 
+    # normalize to mean 0, stddev 1
+    for flavor in ["voxel", "real", "relative"]:
+        for index in range(3):
+            mean, stddev = np.mean([element[flavor][index] for element in centroids.values()]), np.std([element[flavor][index] for element in centroids.values()])
+            for element in centroids.values():
+                element[flavor][index] = (element[flavor][index] - mean)/stddev
+
     return centroids
 
 
@@ -140,6 +147,12 @@ def compute_mean_intensities(patient):
 
         mean_intensities[label] = {"real": np.mean(volume.data.flatten()[indexes==label])}
         mean_intensities[label]["relative"] = (mean_intensities[label]["real"]-volume.data_min)/(volume.data_max-volume.data_min)
+
+    # normalize to mean 0, stddev 1
+    for flavor in ["real", "relative"]:
+        mean, stddev = np.mean([element[flavor] for element in mean_intensities.values()]), np.std([element[flavor] for element in mean_intensities.values()])
+        for key in mean_intensities:
+            mean_intensities[key][flavor] = (mean_intensities[key][flavor] - mean)/stddev
 
     return mean_intensities
 
