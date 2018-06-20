@@ -127,15 +127,13 @@ def liver_build_from_patient(patient):
 
 if __name__ == '__main__':
     from time import time
+    from copy import deepcopy
+    from skimage.segmentation import slic
 
     print("Loading a single patient... ", end="", flush=True)
     t0 = time()
     model_patient = Patient.build_from_folder("data/4")
     print("Done. {:.4f}s".format(time()-t0))
-
-    # We will be cutting the patient's volume and labelmap, just for speeding up the test
-    model_patient.volumes["t2"].data = model_patient.volumes["t2"].data[:,:,20:]
-    model_patient.labelmaps["t2"].data = model_patient.labelmaps["t2"].data[:,:,20:]
 
     # Splitting the background into 3 labels
     model_patient.labelmaps["t2"].data += 2 # Adding space for the extra labels at the start
@@ -148,5 +146,9 @@ if __name__ == '__main__':
     model_graph = liver_build_from_patient(model_patient)
     print("Done. {:.4f}s".format(time()-t0))
 
-
-    print(model_graph)
+    print("Observing image... ", end="", flush=True)
+    t0 = time()
+    observed_patient = deepcopy(model_patient)
+    observed_labels = slic(observed_patient.volumes['t2'].data, n_segments=400,
+                        compactness=0.0001, multichannel=False, sigma=(3,3,1))
+    print("Done. {:.4f}s".format(time()-t0))
