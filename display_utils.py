@@ -92,3 +92,11 @@ def display_segments_as_lines(volume, labelmap, width=700, level=300, **kwargs):
         overlayed[...,i,:] = mark_boundaries(leveled_slice, label_slice)
 
     display_color_volume(overlayed, **kwargs)
+
+def display_solution(observed_labelmap, solution, **kwargs):
+    """Displays a predicted solution"""
+    # Assembling prediction labelmap
+    predicted_labelmap = np.zeros_like(observed_labelmap)
+    for element, prediction in enumerate(solution):
+        predicted_labelmap[observed_labelmap==element]=prediction
+    display_volume(predicted_labelmap, **kwargs)

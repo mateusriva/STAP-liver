@@ -1,0 +1,510 @@
+Assembling initial prediction with weights (0, 0, 0, 1)... Done. 0.0858s
+Accuracy: 48.61%, Cost: 1458.09
+Assembling initial prediction with weights (0, 0, 0, 5)... Done. 0.0847s
+Accuracy: 48.61%, Cost: 7290.43
+Assembling initial prediction with weights (0, 0, 0, 9)... Done. 0.0862s
+Accuracy: 48.61%, Cost: 13122.77
+Assembling initial prediction with weights (0, 0, 1, 0)... Done. 0.0860s
+Accuracy: 5.48%, Cost: 1334.14
+Assembling initial prediction with weights (0, 0, 1, 1)... Done. 0.0861s
+Accuracy: 46.76%, Cost: 2659.15
+Assembling initial prediction with weights (0, 0, 1, 5)... Done. 0.0862s
+Accuracy: 47.20%, Cost: 8355.00
+Assembling initial prediction with weights (0, 0, 1, 9)... Done. 0.0862s
+Accuracy: 49.37%, Cost: 14116.61
+Assembling initial prediction with weights (0, 0, 5, 0)... Done. 0.0850s
+Accuracy: 5.48%, Cost: 6670.68
+Assembling initial prediction with weights (0, 0, 5, 1)... Done. 0.0846s
+Accuracy: 42.43%, Cost: 8111.89
+Assembling initial prediction with weights (0, 0, 5, 5)... Done. 0.0862s
+Accuracy: 46.76%, Cost: 13295.77
+Assembling initial prediction with weights (0, 0, 5, 9)... Done. 0.0865s
+Accuracy: 46.11%, Cost: 18808.42
+Assembling initial prediction with weights (0, 0, 9, 0)... Done. 0.0913s
+Accuracy: 5.48%, Cost: 12007.23
+Assembling initial prediction with weights (0, 0, 9, 1)... Done. 0.0849s
+Accuracy: 36.67%, Cost: 13440.91
+Assembling initial prediction with weights (0, 0, 9, 5)... Done. 0.0871s
+Accuracy: 46.61%, Cost: 18719.87
+Assembling initial prediction with weights (0, 0, 9, 9)... Done. 0.0846s
+Accuracy: 46.76%, Cost: 23932.38
+Assembling initial prediction with weights (0, 1, 0, 0)... Done. 0.0874s
+Accuracy: 31.57%, Cost: 1401.87
+Assembling initial prediction with weights (0, 1, 0, 1)... Done. 0.0863s
+Accuracy: 45.87%, Cost: 2684.67
+Assembling initial prediction with weights (0, 1, 0, 5)... Done. 0.0857s
+Accuracy: 46.57%, Cost: 8262.64
+Assembling initial prediction with weights (0, 1, 0, 9)... Done. 0.0851s
+Accuracy: 49.27%, Cost: 13998.55
+Assembling initial prediction with weights (0, 1, 1, 0)... Done. 0.0848s
+Accuracy: 38.51%, Cost: 2819.71
+Assembling initial prediction with weights (0, 1, 1, 1)... Done. 0.0866s
+Accuracy: 49.77%, Cost: 3926.62
+Assembling initial prediction with weights (0, 1, 1, 5)... Done. 0.0865s
+Accuracy: 50.19%, Cost: 9162.51
+Assembling initial prediction with weights (0, 1, 1, 9)... Done. 0.0851s
+Accuracy: 49.79%, Cost: 14827.32
+Assembling initial prediction with weights (0, 1, 5, 0)... Done. 0.0876s
+Accuracy: 5.83%, Cost: 8038.68
+Assembling initial prediction with weights (0, 1, 5, 1)... Done. 0.0941s
+Accuracy: 43.10%, Cost: 9138.50
+Assembling initial prediction with weights (0, 1, 5, 5)... Done. 0.0853s
+Accuracy: 47.63%, Cost: 13913.61
+Assembling initial prediction with weights (0, 1, 5, 9)... Done. 0.0849s
+Accuracy: 47.08%, Cost: 19312.47
+Assembling initial prediction with weights (0, 1, 9, 0)... Done. 0.0854s
+Accuracy: 5.46%, Cost: 13247.13
+Assembling initial prediction with weights (0, 1, 9, 1)... Done. 0.0866s
+Accuracy: 36.66%, Cost: 14334.49
+Assembling initial prediction with weights (0, 1, 9, 5)... Done. 0.0874s
+Accuracy: 46.80%, Cost: 19256.83
+Assembling initial prediction with weights (0, 1, 9, 9)... Done. 0.0855s
+Accuracy: 47.24%, Cost: 24356.01
+Assembling initial prediction with weights (0, 5, 0, 0)... Done. 0.0891s
+Accuracy: 31.57%, Cost: 7009.37
+Assembling initial prediction with weights (0, 5, 0, 1)... Done. 0.0939s
+Accuracy: 36.09%, Cost: 8391.79
+Assembling initial prediction with weights (0, 5, 0, 5)... Done. 0.0914s
+Accuracy: 45.87%, Cost: 13423.36
+Assembling initial prediction with weights (0, 5, 0, 9)... Done. 0.0900s
+Accuracy: 45.82%, Cost: 18616.34
+Assembling initial prediction with weights (0, 5, 1, 0)... Done. 0.0874s
+Accuracy: 34.30%, Cost: 8426.31
+Assembling initial prediction with weights (0, 5, 1, 1)... Done. 0.0855s
+Accuracy: 39.43%, Cost: 9450.22
+Assembling initial prediction with weights (0, 5, 1, 5)... Done. 0.0855s
+Accuracy: 46.07%, Cost: 14201.14
+Assembling initial prediction with weights (0, 5, 1, 9)... Done. 0.0866s
+Accuracy: 46.18%, Cost: 19258.05
+Assembling initial prediction with weights (0, 5, 5, 0)... Done. 0.0870s
+Accuracy: 38.51%, Cost: 14098.56
+Assembling initial prediction with weights (0, 5, 5, 1)... Done. 0.0864s
+Accuracy: 43.50%, Cost: 14864.77
+Assembling initial prediction with weights (0, 5, 5, 5)... Done. 0.0859s
+Accuracy: 49.77%, Cost: 19633.08
+Assembling initial prediction with weights (0, 5, 5, 9)... Done. 0.0899s
+Accuracy: 50.25%, Cost: 24223.92
+Assembling initial prediction with weights (0, 5, 9, 0)... Done. 0.0848s
+Accuracy: 34.85%, Cost: 19300.23
+Assembling initial prediction with weights (0, 5, 9, 1)... Done. 0.0868s
+Accuracy: 38.81%, Cost: 20034.76
+Assembling initial prediction with weights (0, 5, 9, 5)... Done. 0.0869s
+Accuracy: 48.85%, Cost: 24801.37
+Assembling initial prediction with weights (0, 5, 9, 9)... Done. 0.0864s
+Accuracy: 49.03%, Cost: 29190.71
+Assembling initial prediction with weights (0, 9, 0, 0)... Done. 0.1070s
+Accuracy: 31.57%, Cost: 12616.87
+Assembling initial prediction with weights (0, 9, 0, 1)... Done. 0.0860s
+Accuracy: 33.16%, Cost: 13837.17
+Assembling initial prediction with weights (0, 9, 0, 5)... Done. 0.0861s
+Accuracy: 44.64%, Cost: 19315.18
+Assembling initial prediction with weights (0, 9, 0, 9)... Done. 0.0862s
+Accuracy: 45.87%, Cost: 24162.04
+Assembling initial prediction with weights (0, 9, 1, 0)... Done. 0.0876s
+Accuracy: 32.27%, Cost: 13923.10
+Assembling initial prediction with weights (0, 9, 1, 1)... Done. 0.0860s
+Accuracy: 34.11%, Cost: 14842.86
+Assembling initial prediction with weights (0, 9, 1, 5)... Done. 0.0897s
+Accuracy: 44.77%, Cost: 19977.54
+Assembling initial prediction with weights (0, 9, 1, 9)... Done. 0.0849s
+Accuracy: 45.90%, Cost: 24703.20
+Assembling initial prediction with weights (0, 9, 5, 0)... Done. 0.0857s
+Accuracy: 39.98%, Cost: 19793.66
+Assembling initial prediction with weights (0, 9, 5, 1)... Done. 0.0861s
+Accuracy: 41.48%, Cost: 20410.55
+Assembling initial prediction with weights (0, 9, 5, 5)... Done. 0.0858s
+Accuracy: 46.74%, Cost: 25364.53
+Assembling initial prediction with weights (0, 9, 5, 9)... Done. 0.0860s
+Accuracy: 47.74%, Cost: 29798.46
+Assembling initial prediction with weights (0, 9, 9, 0)... Done. 0.0879s
+Accuracy: 38.51%, Cost: 25377.40
+Assembling initial prediction with weights (0, 9, 9, 1)... Done. 0.0854s
+Accuracy: 40.39%, Cost: 25925.44
+Assembling initial prediction with weights (0, 9, 9, 5)... Done. 0.0846s
+Accuracy: 47.45%, Cost: 30830.86
+Assembling initial prediction with weights (0, 9, 9, 9)... Done. 0.0858s
+Accuracy: 49.77%, Cost: 35339.55
+Assembling initial prediction with weights (1, 0, 0, 0)... Done. 0.0869s
+Accuracy: 1.48%, Cost: 345.74
+Assembling initial prediction with weights (1, 0, 0, 1)... Done. 0.0853s
+Accuracy: 12.59%, Cost: 1905.41
+Assembling initial prediction with weights (1, 0, 0, 5)... Done. 0.1217s
+Accuracy: 48.74%, Cost: 7603.18
+Assembling initial prediction with weights (1, 0, 0, 9)... Done. 0.0867s
+Accuracy: 48.80%, Cost: 13385.88
+Assembling initial prediction with weights (1, 0, 1, 0)... Done. 0.0884s
+Accuracy: 19.32%, Cost: 1867.03
+Assembling initial prediction with weights (1, 0, 1, 1)... Done. 0.0898s
+Accuracy: 17.76%, Cost: 3068.36
+Assembling initial prediction with weights (1, 0, 1, 5)... Done. 0.0937s
+Accuracy: 47.42%, Cost: 8576.97
+Assembling initial prediction with weights (1, 0, 1, 9)... Done. 0.1053s
+Accuracy: 49.29%, Cost: 14298.91
+Assembling initial prediction with weights (1, 0, 5, 0)... Done. 0.0846s
+Accuracy: 13.53%, Cost: 7298.55
+Assembling initial prediction with weights (1, 0, 5, 1)... Done. 0.0844s
+Accuracy: 46.13%, Cost: 8420.40
+Assembling initial prediction with weights (1, 0, 5, 5)... Done. 0.0912s
+Accuracy: 47.07%, Cost: 13460.19
+Assembling initial prediction with weights (1, 0, 5, 9)... Done. 0.0857s
+Accuracy: 46.33%, Cost: 18930.47
+Assembling initial prediction with weights (1, 0, 9, 0)... Done. 0.0852s
+Accuracy: 8.54%, Cost: 12574.58
+Assembling initial prediction with weights (1, 0, 9, 1)... Done. 0.0846s
+Accuracy: 40.16%, Cost: 13744.65
+Assembling initial prediction with weights (1, 0, 9, 5)... Done. 0.0863s
+Accuracy: 46.73%, Cost: 18858.68
+Assembling initial prediction with weights (1, 0, 9, 9)... Done. 0.0914s
+Accuracy: 46.80%, Cost: 24037.93
+Assembling initial prediction with weights (1, 1, 0, 0)... Done. 0.0906s
+Accuracy: 11.33%, Cost: 1892.28
+Assembling initial prediction with weights (1, 1, 0, 1)... Done. 0.1108s
+Accuracy: 16.51%, Cost: 3099.17
+Assembling initial prediction with weights (1, 1, 0, 5)... Done. 0.0853s
+Accuracy: 46.99%, Cost: 8486.70
+Assembling initial prediction with weights (1, 1, 0, 9)... Done. 0.0847s
+Accuracy: 49.68%, Cost: 14176.58
+Assembling initial prediction with weights (1, 1, 1, 0)... Done. 0.0968s
+Accuracy: 18.34%, Cost: 3213.09
+Assembling initial prediction with weights (1, 1, 1, 1)... Done. 0.0859s
+Accuracy: 20.85%, Cost: 4251.76
+Assembling initial prediction with weights (1, 1, 1, 5)... Done. 0.0864s
+Accuracy: 50.42%, Cost: 9336.51
+Assembling initial prediction with weights (1, 1, 1, 9)... Done. 0.0856s
+Accuracy: 50.19%, Cost: 14964.86
+Assembling initial prediction with weights (1, 1, 5, 0)... Done. 0.0862s
+Accuracy: 14.05%, Cost: 8504.57
+Assembling initial prediction with weights (1, 1, 5, 1)... Done. 0.0863s
+Accuracy: 46.72%, Cost: 9400.97
+Assembling initial prediction with weights (1, 1, 5, 5)... Done. 0.0859s
+Accuracy: 47.88%, Cost: 14060.51
+Assembling initial prediction with weights (1, 1, 5, 9)... Done. 0.0858s
+Accuracy: 47.24%, Cost: 19420.45
+Assembling initial prediction with weights (1, 1, 9, 0)... Done. 0.0853s
+Accuracy: 8.76%, Cost: 13662.93
+Assembling initial prediction with weights (1, 1, 9, 1)... Done. 0.0894s
+Accuracy: 40.35%, Cost: 14602.08
+Assembling initial prediction with weights (1, 1, 9, 5)... Done. 0.0895s
+Accuracy: 47.01%, Cost: 19384.23
+Assembling initial prediction with weights (1, 1, 9, 9)... Done. 0.0853s
+Accuracy: 47.28%, Cost: 24453.73
+Assembling initial prediction with weights (1, 5, 0, 0)... Done. 0.0868s
+Accuracy: 1.75%, Cost: 7447.87
+Assembling initial prediction with weights (1, 5, 0, 1)... Done. 0.0864s
+Accuracy: 6.49%, Cost: 8668.69
+Assembling initial prediction with weights (1, 5, 0, 5)... Done. 0.0854s
+Accuracy: 46.12%, Cost: 13579.35
+Assembling initial prediction with weights (1, 5, 0, 9)... Done. 0.0845s
+Accuracy: 45.94%, Cost: 18732.78
+Assembling initial prediction with weights (1, 5, 1, 0)... Done. 0.0847s
+Accuracy: 9.75%, Cost: 8719.48
+Assembling initial prediction with weights (1, 5, 1, 1)... Done. 0.0857s
+Accuracy: 9.90%, Cost: 9659.31
+Assembling initial prediction with weights (1, 5, 1, 5)... Done. 0.0866s
+Accuracy: 46.19%, Cost: 14326.84
+Assembling initial prediction with weights (1, 5, 1, 9)... Done. 0.0851s
+Accuracy: 46.33%, Cost: 19355.07
+Assembling initial prediction with weights (1, 5, 5, 0)... Done. 0.0874s
+Accuracy: 15.49%, Cost: 14359.22
+Assembling initial prediction with weights (1, 5, 5, 1)... Done. 0.0867s
+Accuracy: 44.73%, Cost: 15037.95
+Assembling initial prediction with weights (1, 5, 5, 5)... Done. 0.0859s
+Accuracy: 49.98%, Cost: 19736.23
+Assembling initial prediction with weights (1, 5, 5, 9)... Done. 0.0944s
+Accuracy: 50.31%, Cost: 24302.41
+Assembling initial prediction with weights (1, 5, 9, 0)... Done. 0.0875s
+Accuracy: 10.74%, Cost: 19567.74
+Assembling initial prediction with weights (1, 5, 9, 1)... Done. 0.0865s
+Accuracy: 40.77%, Cost: 20228.54
+Assembling initial prediction with weights (1, 5, 9, 5)... Done. 0.0900s
+Accuracy: 49.00%, Cost: 24896.05
+Assembling initial prediction with weights (1, 5, 9, 9)... Done. 0.0856s
+Accuracy: 49.32%, Cost: 29265.28
+Assembling initial prediction with weights (1, 9, 0, 0)... Done. 0.0854s
+Accuracy: 1.58%, Cost: 12992.54
+Assembling initial prediction with weights (1, 9, 0, 1)... Done. 0.0864s
+Accuracy: 3.28%, Cost: 14064.55
+Assembling initial prediction with weights (1, 9, 0, 5)... Done. 0.0853s
+Accuracy: 44.60%, Cost: 19442.23
+Assembling initial prediction with weights (1, 9, 0, 9)... Done. 0.0859s
+Accuracy: 45.88%, Cost: 24259.82
+Assembling initial prediction with weights (1, 9, 1, 0)... Done. 0.0876s
+Accuracy: 6.86%, Cost: 14171.71
+Assembling initial prediction with weights (1, 9, 1, 1)... Done. 0.0861s
+Accuracy: 4.27%, Cost: 15016.71
+Assembling initial prediction with weights (1, 9, 1, 5)... Done. 0.0855s
+Accuracy: 44.79%, Cost: 20083.96
+Assembling initial prediction with weights (1, 9, 1, 9)... Done. 0.0903s
+Accuracy: 45.93%, Cost: 24787.41
+Assembling initial prediction with weights (1, 9, 5, 0)... Done. 0.0893s
+Accuracy: 15.34%, Cost: 19980.61
+Assembling initial prediction with weights (1, 9, 5, 1)... Done. 0.0843s
+Accuracy: 42.03%, Cost: 20545.94
+Assembling initial prediction with weights (1, 9, 5, 5)... Done. 0.0845s
+Accuracy: 46.82%, Cost: 25449.67
+Assembling initial prediction with weights (1, 9, 5, 9)... Done. 0.0845s
+Accuracy: 47.78%, Cost: 29865.43
+Assembling initial prediction with weights (1, 9, 9, 0)... Done. 0.0866s
+Accuracy: 13.81%, Cost: 25559.86
+Assembling initial prediction with weights (1, 9, 9, 1)... Done. 0.0910s
+Accuracy: 41.12%, Cost: 26067.61
+Assembling initial prediction with weights (1, 9, 9, 5)... Done. 0.0854s
+Accuracy: 47.48%, Cost: 30909.36
+Assembling initial prediction with weights (1, 9, 9, 9)... Done. 0.0861s
+Accuracy: 49.85%, Cost: 35402.59
+Assembling initial prediction with weights (5, 0, 0, 0)... Done. 0.0852s
+Accuracy: 1.48%, Cost: 1728.68
+Assembling initial prediction with weights (5, 0, 0, 1)... Done. 0.0859s
+Accuracy: 4.40%, Cost: 3903.29
+Assembling initial prediction with weights (5, 0, 0, 5)... Done. 0.0852s
+Accuracy: 12.59%, Cost: 9527.07
+Assembling initial prediction with weights (5, 0, 0, 9)... Done. 0.0875s
+Accuracy: 14.24%, Cost: 15081.99
+Assembling initial prediction with weights (5, 0, 1, 0)... Done. 0.0892s
+Accuracy: 10.42%, Cost: 3576.55
+Assembling initial prediction with weights (5, 0, 1, 1)... Done. 0.0866s
+Accuracy: 9.04%, Cost: 5193.86
+Assembling initial prediction with weights (5, 0, 1, 5)... Done. 0.0850s
+Accuracy: 15.02%, Cost: 10481.63
+Assembling initial prediction with weights (5, 0, 1, 9)... Done. 0.0876s
+Accuracy: 16.09%, Cost: 15900.43
+Assembling initial prediction with weights (5, 0, 5, 0)... Done. 0.0850s
+Accuracy: 19.32%, Cost: 9335.15
+Assembling initial prediction with weights (5, 0, 5, 1)... Done. 0.0859s
+Accuracy: 20.62%, Cost: 10432.79
+Assembling initial prediction with weights (5, 0, 5, 5)... Done. 0.0856s
+Accuracy: 17.76%, Cost: 15341.82
+Assembling initial prediction with weights (5, 0, 5, 9)... Done. 0.0877s
+Accuracy: 17.06%, Cost: 20419.92
+Assembling initial prediction with weights (5, 0, 9, 0)... Done. 0.0865s
+Accuracy: 18.69%, Cost: 14862.98
+Assembling initial prediction with weights (5, 0, 9, 1)... Done. 0.0862s
+Accuracy: 19.77%, Cost: 15763.31
+Assembling initial prediction with weights (5, 0, 9, 5)... Done. 0.0845s
+Accuracy: 18.38%, Cost: 20578.38
+Assembling initial prediction with weights (5, 0, 9, 9)... Done. 0.0895s
+Accuracy: 47.53%, Cost: 25464.82
+Assembling initial prediction with weights (5, 1, 0, 0)... Done. 0.0862s
+Accuracy: 10.72%, Cost: 3504.46
+Assembling initial prediction with weights (5, 1, 0, 1)... Done. 0.0854s
+Accuracy: 8.20%, Cost: 5161.06
+Assembling initial prediction with weights (5, 1, 0, 5)... Done. 0.0859s
+Accuracy: 14.44%, Cost: 10362.03
+Assembling initial prediction with weights (5, 1, 0, 9)... Done. 0.0874s
+Accuracy: 15.78%, Cost: 15756.21
+Assembling initial prediction with weights (5, 1, 1, 0)... Done. 0.0855s
+Accuracy: 12.56%, Cost: 4866.08
+Assembling initial prediction with weights (5, 1, 1, 1)... Done. 0.0845s
+Accuracy: 11.76%, Cost: 6249.74
+Assembling initial prediction with weights (5, 1, 1, 5)... Done. 0.0858s
+Accuracy: 17.29%, Cost: 11168.73
+Assembling initial prediction with weights (5, 1, 1, 9)... Done. 0.0854s
+Accuracy: 17.87%, Cost: 16467.05
+Assembling initial prediction with weights (5, 1, 5, 0)... Done. 0.0863s
+Accuracy: 19.62%, Cost: 10337.16
+Assembling initial prediction with weights (5, 1, 5, 1)... Done. 0.0852s
+Accuracy: 20.93%, Cost: 11268.79
+Assembling initial prediction with weights (5, 1, 5, 5)... Done. 0.0909s
+Accuracy: 18.69%, Cost: 15878.85
+Assembling initial prediction with weights (5, 1, 5, 9)... Done. 0.0859s
+Accuracy: 18.02%, Cost: 20858.53
+Assembling initial prediction with weights (5, 1, 9, 0)... Done. 0.0862s
+Accuracy: 18.98%, Cost: 15727.79
+Assembling initial prediction with weights (5, 1, 9, 1)... Done. 0.0858s
+Accuracy: 20.10%, Cost: 16490.74
+Assembling initial prediction with weights (5, 1, 9, 5)... Done. 0.0859s
+Accuracy: 18.48%, Cost: 21039.83
+Assembling initial prediction with weights (5, 1, 9, 9)... Done. 0.0853s
+Accuracy: 48.13%, Cost: 25833.67
+Assembling initial prediction with weights (5, 5, 0, 0)... Done. 0.0867s
+Accuracy: 11.33%, Cost: 9461.38
+Assembling initial prediction with weights (5, 5, 0, 1)... Done. 0.0869s
+Accuracy: 8.54%, Cost: 10583.05
+Assembling initial prediction with weights (5, 5, 0, 5)... Done. 0.0881s
+Accuracy: 16.51%, Cost: 15495.85
+Assembling initial prediction with weights (5, 5, 0, 9)... Done. 0.0858s
+Accuracy: 16.35%, Cost: 20277.09
+Assembling initial prediction with weights (5, 5, 1, 0)... Done. 0.0856s
+Accuracy: 12.74%, Cost: 10458.61
+Assembling initial prediction with weights (5, 5, 1, 1)... Done. 0.0852s
+Accuracy: 14.69%, Cost: 11400.19
+Assembling initial prediction with weights (5, 5, 1, 5)... Done. 0.0850s
+Accuracy: 16.77%, Cost: 16095.06
+Assembling initial prediction with weights (5, 5, 1, 9)... Done. 0.0864s
+Accuracy: 16.48%, Cost: 20788.20
+Assembling initial prediction with weights (5, 5, 5, 0)... Done. 0.0862s
+Accuracy: 18.34%, Cost: 16065.44
+Assembling initial prediction with weights (5, 5, 5, 1)... Done. 0.0847s
+Accuracy: 19.24%, Cost: 16714.05
+Assembling initial prediction with weights (5, 5, 5, 5)... Done. 0.0892s
+Accuracy: 20.85%, Cost: 21258.80
+Assembling initial prediction with weights (5, 5, 5, 9)... Done. 0.0866s
+Accuracy: 21.11%, Cost: 25541.02
+Assembling initial prediction with weights (5, 5, 9, 0)... Done. 0.0867s
+Accuracy: 19.03%, Cost: 21389.68
+Assembling initial prediction with weights (5, 5, 9, 1)... Done. 0.0873s
+Accuracy: 20.28%, Cost: 21931.97
+Assembling initial prediction with weights (5, 5, 9, 5)... Done. 0.0859s
+Accuracy: 20.38%, Cost: 26299.27
+Assembling initial prediction with weights (5, 5, 9, 9)... Done. 0.0860s
+Accuracy: 49.94%, Cost: 30465.14
+Assembling initial prediction with weights (5, 9, 0, 0)... Done. 0.0858s
+Accuracy: 7.61%, Cost: 15125.19
+Assembling initial prediction with weights (5, 9, 0, 1)... Done. 0.0859s
+Accuracy: 3.96%, Cost: 16029.03
+Assembling initial prediction with weights (5, 9, 0, 5)... Done. 0.0860s
+Accuracy: 15.40%, Cost: 21144.81
+Assembling initial prediction with weights (5, 9, 0, 9)... Done. 0.0859s
+Accuracy: 16.27%, Cost: 25680.99
+Assembling initial prediction with weights (5, 9, 1, 0)... Done. 0.0861s
+Accuracy: 8.50%, Cost: 16014.74
+Assembling initial prediction with weights (5, 9, 1, 1)... Done. 0.0860s
+Accuracy: 9.74%, Cost: 16775.34
+Assembling initial prediction with weights (5, 9, 1, 5)... Done. 0.0863s
+Accuracy: 15.71%, Cost: 21666.42
+Assembling initial prediction with weights (5, 9, 1, 9)... Done. 0.0854s
+Accuracy: 16.48%, Cost: 26122.44
+Assembling initial prediction with weights (5, 9, 5, 0)... Done. 0.0855s
+Accuracy: 16.04%, Cost: 21572.92
+Assembling initial prediction with weights (5, 9, 5, 1)... Done. 0.0846s
+Accuracy: 16.74%, Cost: 22075.87
+Assembling initial prediction with weights (5, 9, 5, 5)... Done. 0.0846s
+Accuracy: 18.18%, Cost: 26760.03
+Assembling initial prediction with weights (5, 9, 5, 9)... Done. 0.0871s
+Accuracy: 18.27%, Cost: 30990.95
+Assembling initial prediction with weights (5, 9, 9, 0)... Done. 0.0861s
+Accuracy: 17.86%, Cost: 27122.91
+Assembling initial prediction with weights (5, 9, 9, 1)... Done. 0.0857s
+Accuracy: 18.68%, Cost: 27548.13
+Assembling initial prediction with weights (5, 9, 9, 5)... Done. 0.0851s
+Accuracy: 48.78%, Cost: 32123.53
+Assembling initial prediction with weights (5, 9, 9, 9)... Done. 0.0860s
+Accuracy: 50.69%, Cost: 36451.36
+Assembling initial prediction with weights (9, 0, 0, 0)... Done. 0.0864s
+Accuracy: 1.48%, Cost: 3111.62
+Assembling initial prediction with weights (9, 0, 0, 1)... Done. 0.0863s
+Accuracy: 2.88%, Cost: 5078.39
+Assembling initial prediction with weights (9, 0, 0, 5)... Done. 0.0853s
+Accuracy: 11.22%, Cost: 11969.98
+Assembling initial prediction with weights (9, 0, 0, 9)... Done. 0.0853s
+Accuracy: 12.59%, Cost: 17148.72
+Assembling initial prediction with weights (9, 0, 1, 0)... Done. 0.0864s
+Accuracy: 8.16%, Cost: 4910.36
+Assembling initial prediction with weights (9, 0, 1, 1)... Done. 0.0847s
+Accuracy: 4.72%, Cost: 6401.63
+Assembling initial prediction with weights (9, 0, 1, 5)... Done. 0.0855s
+Accuracy: 12.28%, Cost: 12850.49
+Assembling initial prediction with weights (9, 0, 1, 9)... Done. 0.0860s
+Accuracy: 13.43%, Cost: 17907.62
+Assembling initial prediction with weights (9, 0, 5, 0)... Done. 0.0864s
+Accuracy: 18.01%, Cost: 11358.45
+Assembling initial prediction with weights (9, 0, 5, 1)... Done. 0.0850s
+Accuracy: 18.75%, Cost: 12272.73
+Assembling initial prediction with weights (9, 0, 5, 5)... Done. 0.0854s
+Accuracy: 17.87%, Cost: 17884.34
+Assembling initial prediction with weights (9, 0, 5, 9)... Done. 0.0853s
+Accuracy: 17.25%, Cost: 22589.97
+Assembling initial prediction with weights (9, 0, 9, 0)... Done. 0.0865s
+Accuracy: 19.32%, Cost: 16803.28
+Assembling initial prediction with weights (9, 0, 9, 1)... Done. 0.0872s
+Accuracy: 19.61%, Cost: 17572.06
+Assembling initial prediction with weights (9, 0, 9, 5)... Done. 0.0850s
+Accuracy: 19.41%, Cost: 22914.94
+Assembling initial prediction with weights (9, 0, 9, 9)... Done. 0.0846s
+Accuracy: 17.76%, Cost: 27615.28
+Assembling initial prediction with weights (9, 1, 0, 0)... Done. 0.0858s
+Accuracy: 8.29%, Cost: 4872.84
+Assembling initial prediction with weights (9, 1, 0, 1)... Done. 0.0858s
+Accuracy: 4.85%, Cost: 6347.88
+Assembling initial prediction with weights (9, 1, 0, 5)... Done. 0.0858s
+Accuracy: 12.43%, Cost: 12756.43
+Assembling initial prediction with weights (9, 1, 0, 9)... Done. 0.0859s
+Accuracy: 13.49%, Cost: 17773.83
+Assembling initial prediction with weights (9, 1, 1, 0)... Done. 0.0868s
+Accuracy: 9.04%, Cost: 6203.48
+Assembling initial prediction with weights (9, 1, 1, 1)... Done. 0.0862s
+Accuracy: 6.22%, Cost: 7435.20
+Assembling initial prediction with weights (9, 1, 1, 5)... Done. 0.0846s
+Accuracy: 13.50%, Cost: 13510.49
+Assembling initial prediction with weights (9, 1, 1, 9)... Done. 0.0865s
+Accuracy: 14.55%, Cost: 18441.76
+Assembling initial prediction with weights (9, 1, 5, 0)... Done. 0.0881s
+Accuracy: 18.39%, Cost: 12252.64
+Assembling initial prediction with weights (9, 1, 5, 1)... Done. 0.0866s
+Accuracy: 18.62%, Cost: 13031.64
+Assembling initial prediction with weights (9, 1, 5, 5)... Done. 0.0853s
+Accuracy: 18.12%, Cost: 18378.26
+Assembling initial prediction with weights (9, 1, 5, 9)... Done. 0.0863s
+Accuracy: 17.84%, Cost: 22994.48
+Assembling initial prediction with weights (9, 1, 9, 0)... Done. 0.0859s
+Accuracy: 19.53%, Cost: 17563.78
+Assembling initial prediction with weights (9, 1, 9, 1)... Done. 0.0846s
+Accuracy: 19.75%, Cost: 18229.59
+Assembling initial prediction with weights (9, 1, 9, 5)... Done. 0.0847s
+Accuracy: 19.52%, Cost: 23335.27
+Assembling initial prediction with weights (9, 1, 9, 9)... Done. 0.0861s
+Accuracy: 18.37%, Cost: 27957.78
+Assembling initial prediction with weights (9, 5, 0, 0)... Done. 0.0854s
+Accuracy: 13.83%, Cost: 11245.40
+Assembling initial prediction with weights (9, 5, 0, 1)... Done. 0.0849s
+Accuracy: 9.69%, Cost: 12190.98
+Assembling initial prediction with weights (9, 5, 0, 5)... Done. 0.0860s
+Accuracy: 16.00%, Cost: 18078.56
+Assembling initial prediction with weights (9, 5, 0, 9)... Done. 0.0848s
+Accuracy: 15.82%, Cost: 22505.35
+Assembling initial prediction with weights (9, 5, 1, 0)... Done. 0.0862s
+Accuracy: 14.15%, Cost: 12095.49
+Assembling initial prediction with weights (9, 5, 1, 1)... Done. 0.0857s
+Accuracy: 14.56%, Cost: 12918.51
+Assembling initial prediction with weights (9, 5, 1, 5)... Done. 0.0869s
+Accuracy: 16.31%, Cost: 18589.04
+Assembling initial prediction with weights (9, 5, 1, 9)... Done. 0.0849s
+Accuracy: 16.09%, Cost: 22950.52
+Assembling initial prediction with weights (9, 5, 5, 0)... Done. 0.0891s
+Accuracy: 18.02%, Cost: 17962.22
+Assembling initial prediction with weights (9, 5, 5, 1)... Done. 0.0867s
+Accuracy: 18.20%, Cost: 18532.69
+Assembling initial prediction with weights (9, 5, 5, 5)... Done. 0.0891s
+Accuracy: 21.50%, Cost: 23525.61
+Assembling initial prediction with weights (9, 5, 5, 9)... Done. 0.0884s
+Accuracy: 20.99%, Cost: 27553.60
+Assembling initial prediction with weights (9, 5, 9, 0)... Done. 0.0849s
+Accuracy: 20.00%, Cost: 23259.92
+Assembling initial prediction with weights (9, 5, 9, 1)... Done. 0.0920s
+Accuracy: 20.42%, Cost: 23735.25
+Assembling initial prediction with weights (9, 5, 9, 5)... Done. 0.0848s
+Accuracy: 21.35%, Cost: 28425.03
+Assembling initial prediction with weights (9, 5, 9, 9)... Done. 0.0856s
+Accuracy: 20.11%, Cost: 32461.72
+Assembling initial prediction with weights (9, 9, 0, 0)... Done. 0.0849s
+Accuracy: 11.33%, Cost: 17030.49
+Assembling initial prediction with weights (9, 9, 0, 1)... Done. 0.0850s
+Accuracy: 12.05%, Cost: 17793.74
+Assembling initial prediction with weights (9, 9, 0, 5)... Done. 0.0846s
+Accuracy: 15.91%, Cost: 23536.55
+Assembling initial prediction with weights (9, 9, 0, 9)... Done. 0.0883s
+Accuracy: 16.51%, Cost: 27892.53
+Assembling initial prediction with weights (9, 9, 1, 0)... Done. 0.0855s
+Accuracy: 11.87%, Cost: 17770.72
+Assembling initial prediction with weights (9, 9, 1, 1)... Done. 0.0862s
+Accuracy: 12.41%, Cost: 18436.73
+Assembling initial prediction with weights (9, 9, 1, 5)... Done. 0.0862s
+Accuracy: 16.20%, Cost: 23974.24
+Assembling initial prediction with weights (9, 9, 1, 9)... Done. 0.0853s
+Accuracy: 16.64%, Cost: 28270.39
+Assembling initial prediction with weights (9, 9, 5, 0)... Done. 0.0862s
+Accuracy: 16.30%, Cost: 23412.03
+Assembling initial prediction with weights (9, 9, 5, 1)... Done. 0.0854s
+Accuracy: 16.61%, Cost: 23869.16
+Assembling initial prediction with weights (9, 9, 5, 5)... Done. 0.0849s
+Accuracy: 18.68%, Cost: 28806.79
+Assembling initial prediction with weights (9, 9, 5, 9)... Done. 0.0851s
+Accuracy: 18.46%, Cost: 32897.34
+Assembling initial prediction with weights (9, 9, 9, 0)... Done. 0.0864s
+Accuracy: 18.34%, Cost: 28917.79
+Assembling initial prediction with weights (9, 9, 9, 1)... Done. 0.0859s
+Accuracy: 18.48%, Cost: 29307.02
+Assembling initial prediction with weights (9, 9, 9, 5)... Done. 0.0862s
+Accuracy: 19.05%, Cost: 34044.81
+Assembling initial prediction with weights (9, 9, 9, 9)... Done. 0.0873s
+Accuracy: 20.85%, Cost: 38265.83
