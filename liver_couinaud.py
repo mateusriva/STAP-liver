@@ -22,7 +22,7 @@ class_names=["BG Posterior","BG Anterior","BG OtherBody","Vena Cava","Portal Vei
 class_colors=[(0,0,0),(0.5,0.5,0.5),(1,1,1),(0,0,1),(0,1,1),(0.5,0,1),(0,0.5,1),(0,0,0.5),(1,0,0),(1,0.5,0),(0.5,0.5,0),(0,1,0),(0,0.5,0),(1,0.5,1),(0.5,0,0.5),(1,1,0),(1,0,1)]
 """Color of each model class."""
 
-def compute_centroids(volume, labelmap):
+def compute_centroids(volume, labelmap, specific_label=None):
     """Computes centroids for each label in a volume.
 
     Returns
@@ -32,19 +32,19 @@ def compute_centroids(volume, labelmap):
         the normalized, real x, y, and z of each label.
     """
     # get sorted labels and center-of-mass for each label
-    labels = np.unique(labelmap.data)
-    centroids = measure_center_of_mass(np.ones_like(labelmap.data), labels=labelmap.data, index=labels)
+    if specific_label is None:
+        labels = np.unique(labelmap.data)
+        centroids = measure_center_of_mass(np.ones_like(labelmap.data), labels=labelmap.data, index=labels)
+    else: # specific label only
+        centroids = measure_center_of_mass(labelmap.data==specific_label)
     centroids = np.array(centroids)
 
     # multiply voxel value by voxel size to get real centroid
     centroids *= volume.header["spacings"]
 
-    # normalizing to normal~(0,1)
-    #centroids = (centroids - centroids.mean(axis=0)) / centroids.std(axis=0)
-
     return centroids
 
-def compute_intensities(volume, labelmap):
+def compute_intensities(volume, labelmap, specific_label=None):
     """Computes mean intensities for each label in a volume.
 
     TODO: some volume normalization? Gradient, maybe? Or mean norm of voxels?
@@ -55,21 +55,20 @@ def compute_intensities(volume, labelmap):
         Array with `num_labels` lines and 1 column. Each line contains
         the absolute mean intensity of each label.
     """
-    # get sorted labels and indexes for each label
-    labels, indexes = np.unique(labelmap.data, return_inverse=True)
-    # initializing intensities array
-    intensities = np.empty((len(labels),1))
-
-    # building mean intensity attribute list
-    for label in labels:
-        intensities[label] = np.mean(volume.data.flatten()[indexes==label])
-
-    # normalizing to normal~(0,1)
-    #intensities = (intensities - intensities.mean(axis=0)) / intensities.std(axis=0)
+    if specific_label is None:
+        # get sorted labels and indexes for each label
+        labels, indexes = np.unique(labelmap.data, return_inverse=True)
+        # initializing intensities array
+        intensities = np.empty((len(labels),1))
+        # building mean intensity attribute list
+        for label in labels:
+            intensities[label] = np.mean(volume.data.flatten()[indexes==label])
+    else: # specific label only
+        intensities = np.mean(volume.data[labelmap.data==specific_label])
 
     return intensities
 
-def compute_sizes(volume, labelmap):
+def compute_sizes(volume, labelmap, specific_label=None):
     """Computes the size (volume) of each label in a volume.
 
     Returns
@@ -78,16 +77,16 @@ def compute_sizes(volume, labelmap):
         Array with `num_labels` lines and 1 column. Each line contains
         the absolute size of each label.
     """
-    # get sorted labels and voxel count per label
-    labels,voxel_count_per_labels = np.unique(labelmap.data, return_counts=True)
-    # multiplying by the real size of the voxel
-    voxel_count_per_labels = voxel_count_per_labels * np.prod(volume.header["spacings"])
-    voxel_count_per_labels = voxel_count_per_labels.reshape((voxel_count_per_labels.shape[0],1))
+    if specific_label is None:
+        # get sorted labels and voxel count per label
+        labels,voxel_count_per_labels = np.unique(labelmap.data, return_counts=True)
+        # multiplying by the real size of the voxel
+        sizes = voxel_count_per_labels * np.prod(volume.header["spacings"])
+        sizes = sizes.reshape((voxel_count_per_labels.shape[0],1))
+    else: # specific label only
+        sizes = np.count_nonzero(labelmap.data == specific_label)*np.prod(volume.header["spacings"])
 
-    # normalizing to normal~(0,1)
-    #voxel_count_per_labels = (voxel_count_per_labels - voxel_count_per_labels.mean(axis=0)) / voxel_count_per_labels.std(axis=0)
-
-    return voxel_count_per_labels
+    return sizes
 
 def liver_build_from_patient(patient, vertex_mean=None,vertex_std=None,edge_mean=None,edge_std=None, return_stats=False):
     """Assembles a liver SRG from an annotated patient.
@@ -166,6 +165,68 @@ def represent_liver_srg(object_graph,is_model=False,vertex_range=None):
 
     return representation
 
+def compute_cost(x, y, weights=None):
+    """Computes the row-wise cost between two matrixes."""
+    if weights is None:
+        if len(x.shape) > 1:
+            weights = np.ones_like(x.shape[1])
+        else:
+            weights = np.ones_like(x.shape[0])
+    weights = weights/np.sum(weights)
+    return np.linalg.norm(weights*(x-y), axis=-1)
+
+def update_graph(graph, old, new, patient, vertex_mean=None,vertex_std=None,edge_mean=None,edge_std=None):
+    """Updates a graph which changed two labels.
+
+    Parameters/
+    ----------
+    graph : `SRG`
+        Graph to be updated.
+    old : `int`
+        Label that was replaced by `new`.
+    new : `int`
+        Label that replaced `old`.
+    patient : `Patient`
+        Patient object with updated labelmap.
+    """
+    # Acquiring t2 volume and labelmap
+    volume = patient.volumes['t2']
+    labelmap = patient.labelmaps['t2']
+
+    # Compute statistical attributes
+    updated_vertices = (graph.vertices*vertex_std) + vertex_mean
+    centroids = graph.vertices[:,:3]
+    intensities = graph.vertices[:,3]
+    sizes = graph.vertices[:,4]
+
+    centroids[old] = compute_centroids(volume, labelmap, old)
+    intensities[old] = compute_intensities(volume, labelmap, old)
+    sizes[old] = compute_sizes(volume, labelmap, old)
+
+    centroids[new] = compute_centroids(volume, labelmap, new)
+    intensities[new] = compute_intensities(volume, labelmap, new)
+    sizes[new] = compute_sizes(volume, labelmap, new)
+
+    # Assemble statistical attributes as the vertex matrix
+    vertices = np.concatenate([centroids, intensities.reshape(intensities.shape[0],1), sizes.reshape(intensities.shape[0],1)],axis=-1)
+    # Normalizing to normal~(0,1)
+    if vertex_mean is None: vertex_mean = vertices.mean(axis=0)
+    if vertex_std is None: vertex_std = vertices.std(axis=0)
+    vertices = (vertices - vertex_mean) / vertex_std
+
+    # Compute relational attributes
+    positions = np.repeat(centroids, centroids.shape[0],axis=0) - np.vstack([centroids]*centroids.shape[0])
+    #contrasts = np.repeat(intensities, intensities.shape[0],axis=0) / np.vstack([intensities]*intensities.shape[0])
+    #ratios = np.repeat(sizes, sizes.shape[0],axis=0) / np.vstack([sizes]*sizes.shape[0])
+    # Assemble relational attributes as the edges matrix
+    edges = positions#np.concatenate([positions, contrasts, ratios],axis=-1)
+    # Normalizing to normal~(0,1)
+    if edge_mean is None: edge_mean = edges.mean(axis=0)
+    if edge_std is None: edge_std = edges.std(axis=0)
+    edges = (edges - edge_mean) / edge_std
+
+    return SRG(vertices, edges, ["centroid_x", "centroid_y", "centroid_z", "intensity", "size"], ["position"])#, "contrast", "ratio"])
+
 if __name__ == '__main__':
     from time import time
     from copy import deepcopy
@@ -191,17 +252,22 @@ if __name__ == '__main__':
     model_graph, vertex_mean, vertex_std, edge_mean, edge_std = liver_build_from_patient(model_patient, return_stats=True)
     print("Done. {:.4f}s".format(time()-t0))
 
+    #print(represent_liver_srg(model_graph,True))
+
     # Self-matching for calibration
     print("Calibrating model... ", end="", flush=True)
     t0 = time()
-    other_graph = deepcopy(model_graph)
-    solution = np.empty(other_graph.vertices.shape[0])
-    # Getting closest model vertex, for each vertex
-    for i, vertex in enumerate(other_graph.vertices):
-        vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
-        distances = np.linalg.norm((model_graph.vertices[:,:-1]-vertex_matrix[:,:-1]), axis=-1)#np.sum(abs(model_graph.vertices-vertex_matrix),axis=-1)
-        solution[i] = np.argmin(distances)
-    errors = np.sum(solution != np.arange(model_graph.vertices.shape[0]))
+    weights_list = list(product([0,1,2], repeat=4))[1:]
+    errors = 0
+    for weights in weights_list:
+        other_graph = deepcopy(model_graph)
+        solution = np.empty(other_graph.vertices.shape[0])
+        # Getting closest model vertex, for each vertex
+        for i, vertex in enumerate(other_graph.vertices):
+            vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
+            distances = compute_cost(model_graph.vertices[:,:-1],vertex_matrix[:,:-1], weights)#np.sum(abs(model_graph.vertices-vertex_matrix),axis=-1)
+            solution[i] = np.argmin(distances)
+        errors += np.sum(solution != np.arange(model_graph.vertices.shape[0]))
     print("Done. {:.4f}s. {} errors found".format(time()-t0, errors))
 
     print("Observing image... ", end="", flush=True)
@@ -226,54 +292,22 @@ if __name__ == '__main__':
 
     print("Building super-observation graph... ", end="", flush=True)
     t0 = time()
-    observed_patient.labelmaps["t2"] = observed_labels
+    observed_patient.labelmaps["t2"].data = observed_labels
     super_observation_graph = liver_build_from_patient(observed_patient, vertex_mean, vertex_std, edge_mean, edge_std)
     print("Done. {:.4f}s".format(time()-t0))
 
-    print(represent_liver_srg(model_graph,True))
+    initial_weights = [1,1,1,0.5] # Determined subjectively and experimentally - must formalize!
 
-    # Attempting various weights
-    # costs, accuracies = [], []
-    # weights_list = product([0,1,5,9], repeat=4)
-    # for weights in weights_list:
-    #     print("Assembling initial prediction with weights {}... ".format(weights), end="", flush=True)
-    #     t0 = time()
-    #     solution = np.empty(super_observation_graph.vertices.shape[0])
-    #     # Getting closest model vertex, for each vertex
-    #     for i, vertex in enumerate(super_observation_graph.vertices):
-    #         vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
-    #         distances = np.linalg.norm((weights*(model_graph.vertices[:,:-1]-vertex_matrix[:,:-1])/np.sum(weights)), axis=-1)#np.sum(abs(model_graph.vertices-vertex_matrix),axis=-1)
-    #         solution[i] = np.argmin(distances)
-    #     print("Done. {:.4f}s".format(time()-t0))
-    #
-    #     # Displaying a prediction
-    #     #display_solution(observed_labels, solution, title="Weights: {}".format(weights),cmap=ListedColormap(np.array(class_colors)[np.unique(solution).astype(int)]))
-    #     # Computing total prediction cost
-    #     cost = np.sum([np.linalg.norm(weights*(model_graph.vertices[int(solution[x]),:-1]-super_observation_graph.vertices[x,:-1]), axis=-1) for x in range(len(super_observation_graph.vertices))])
-    #     costs.append(cost)
-    #     predicted_labelmap = np.zeros_like(observed_labels)
-    #     for element, prediction in enumerate(solution):
-    #         predicted_labelmap[observed_labels==element]=prediction
-    #     accuracy = np.sum([predicted_labelmap==model_patient.labelmaps['t2'].data]) / predicted_labelmap.size
-    #     accuracies.append(accuracy)
-    #
-    #     print("Accuracy: {:.2f}%, Cost: {:.2f}".format(accuracy*100,cost))
-    #
-    #     del vertex_matrix, distances, predicted_labelmap, cost, accuracy
-    #
-    # for cost,accuracy,weights in zip(*sorted(zip(costs,accuracies,weights_list))):
-    #     print("W {} : Accuracy: {}%, Cost: {:.3f}".format(weights,accuracy,cost))
-
-    weights = [1,5,5,9]
-    print("Assembling initial prediction with weights {}... ".format(weights), end="", flush=True)
+    print("Assembling initial prediction with weights {}... ".format(initial_weights), end="", flush=True)
     t0 = time()
-    solution = np.empty(super_observation_graph.vertices.shape[0])
+    solution = np.empty(super_observation_graph.vertices.shape[0], dtype=int)
     # Getting closest model vertex, for each vertex
     for i, vertex in enumerate(super_observation_graph.vertices):
         vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
-        distances = np.linalg.norm((weights*(model_graph.vertices[:,:-1]-vertex_matrix[:,:-1])/np.sum(weights)), axis=-1)#np.sum(abs(model_graph.vertices-vertex_matrix),axis=-1)
+        distances = compute_cost(model_graph.vertices[:,:-1],vertex_matrix[:,:-1], initial_weights)
         solution[i] = np.argmin(distances)
     print("Done. {:.4f}s".format(time()-t0))
+    #display_solution(observed_labels, solution, cmap=ListedColormap(class_colors))
 
     # Joining regions into an observation graph
     print("Building joined observation graph... ", end="", flush=True)
@@ -281,11 +315,149 @@ if __name__ == '__main__':
     joined_labels = np.zeros_like(observed_labels)
     for element, prediction in enumerate(solution):
         joined_labels[observed_labels==element]=prediction
+    t1 = time()
     joined_patient = deepcopy(observed_patient)
     joined_patient.labelmaps["t2"].data = joined_labels
     observation_graph = liver_build_from_patient(joined_patient, vertex_mean, vertex_std, edge_mean, edge_std)
+    print("Done. {:.4f}s + {:.4f}s".format(t1-t0,time()-t1))
+
+    print("Model:",represent_liver_srg(model_graph, True))
+    print("Obser:",represent_liver_srg(observation_graph,True))
+
+    # Computing total cost of solution
+    vertex_weights, edge_weights=[1,1,1,1,1],[1,1,1]
+    # TODO: improve the edge position attribute cost. currently it's just distance.
+    print("Computing cost... ", end="", flush=True)
+    t0 = time()
+    current_vertex_costs = compute_cost(observation_graph.vertices, model_graph.vertices, vertex_weights)
+    current_edge_costs = compute_cost(observation_graph.edges, model_graph.edges, edge_weights)
     print("Done. {:.4f}s".format(time()-t0))
+    print("Costs are:\n   Total\t| Mean\nV  {:.3f}\t| {:.3f}\nE  {:.3f}\t| {:.3f}".format(np.sum(current_vertex_costs), np.mean(current_vertex_costs),np.sum(current_edge_costs), np.mean(current_edge_costs)))
 
-    print(represent_liver_srg(observation_graph,True))
+    # Attempting greedy improvement
+    # * Rough algorithm: for each vertex in super-obs, * attempt to change its prediction
+    # * Update joined_labels, * recompute ONLY? affected vertices/edges, * check cost
+    for epoch in range(1):
+        working_solution = deepcopy(solution) # This solution will update at end of epoch
+        for i, super_vertex in enumerate(super_observation_graph.vertices):
+            # Attempting to change the supervertex's prediction (which is currently solution[i])
+            t0 = time()
+            print(represent_liver_srg(observation_graph))
+            current_vertex_costs = np.mean(compute_cost(observation_graph.vertices, model_graph.vertices, vertex_weights))
+            current_edge_costs = np.mean(compute_cost(observation_graph.edges, model_graph.edges, edge_weights))
+            current_prediction = solution[i]
+            print("Attempting to improve on supervertex {} (currently {})".format(i, solution[i]))
+            print("Current costs are {:.3f}, {:.3f} ({:.4f}s)".format(current_vertex_costs,current_edge_costs, time()-t0))
 
-    # Greedy improvement of joined observation graph (by changing the super observation graph)
+            working_labels = deepcopy(joined_labels)
+            working_patient = deepcopy(joined_patient)
+            for j, potential_prediction in enumerate(model_graph.vertices):
+                # updating joined_labels
+                working_labels[observed_labels==i] = j
+
+                # recomputing affected parts of the graph
+                working_patient.labelmaps["t2"].data = working_labels
+                working_graph = update_graph(observation_graph, solution[i], j, working_patient, vertex_mean, vertex_std, edge_mean, edge_std)
+
+                # computing and comparing new costs
+                potential_vertex_costs = np.mean(compute_cost(working_graph.vertices, model_graph.vertices, vertex_weights))
+                potential_edge_costs = np.mean(compute_cost(working_graph.edges, model_graph.edges, edge_weights))
+                if potential_vertex_costs + potential_edge_costs < current_vertex_costs + current_edge_costs:
+                    print("\t{} is better! Costs {:.3f}, {:.3f} ({:.4f})".format(j, potential_vertex_costs, potential_edge_costs, time()-t0))
+                    current_vertex_costs = potential_vertex_costs
+                    current_edge_costs = potential_edge_costs
+                    current_prediction = j
+
+            # Updating prediction
+            working_solution[i] = current_prediction
+
+    # Attempting various weights
+    # costs, accuracies = [], []
+    # weights_list = list(product([1,2], repeat=4))
+    # for weights in weights_list:
+    #     print("Assembling initial prediction with weights {}... ".format(weights), end="", flush=True)
+    #     t0 = time()
+    #     solution = np.empty(super_observation_graph.vertices.shape[0])
+    #     # Getting closest model vertex, for each vertex
+    #     for i, vertex in enumerate(super_observation_graph.vertices):
+    #         vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
+    #         distances = compute_cost(model_graph.vertices[:,:-1],vertex_matrix[:,:-1], weights)#np.sum(abs(model_graph.vertices-vertex_matrix),axis=-1)
+    #         solution[i] = np.argmin(distances)
+    #     print("Done. {:.4f}s".format(time()-t0))
+    #
+    #     # Displaying a prediction
+    #     display_solution(observed_labels, solution, title="Weights: {}".format(weights),cmap=ListedColormap(np.array(class_colors)[np.unique(solution).astype(int)]))
+    #     # Computing total prediction cost
+    #     cost = np.sum([compute_cost(model_graph.vertices[int(solution[x]),:-1],super_observation_graph.vertices[x,:-1], weights) for x in range(len(super_observation_graph.vertices))])
+    #     costs.append(cost)
+    #     predicted_labelmap = np.zeros_like(observed_labels)
+    #     for element, prediction in enumerate(solution):
+    #         predicted_labelmap[observed_labels==element]=prediction
+    #     accuracy = np.sum([predicted_labelmap==model_patient.labelmaps['t2'].data]) / predicted_labelmap.size
+    #     accuracies.append(accuracy)
+    #
+    # for i, cost in sorted(enumerate(costs),key=lambda x:x[1]):
+    #     print("W {} : Accuracy: {:.1f}%, Cost: {:.3f}".format(weights_list[i],accuracies[i]*100,cost))
+
+    # weights = [1,2,2,2]
+    # print("Assembling initial prediction with weights {}... ".format(weights), end="", flush=True)
+    # t0 = time()
+    # solution = np.empty(super_observation_graph.vertices.shape[0])
+    # # Getting closest model vertex, for each vertex
+    # for i, vertex in enumerate(super_observation_graph.vertices):
+    #     vertex_matrix = np.vstack([vertex]*model_graph.vertices.shape[0])
+    #     distances = compute_cost(model_graph.vertices[:,:-1],vertex_matrix[:,:-1], weights)
+    #     solution[i] = np.argmin(distances)
+    # print("Done. {:.4f}s".format(time()-t0))
+    # display_solution(observed_labels, solution, cmap=ListedColormap(class_colors))
+    # solution = solution.astype(int)
+    # _, super_count = np.unique(solution, return_counts=True)
+    #
+    # # Joining regions into an observation graph
+    # print("Building joined observation graph... ", end="", flush=True)
+    # t0 = time()
+    # joined_labels = np.zeros_like(observed_labels)
+    # for element, prediction in enumerate(solution):
+    #     joined_labels[observed_labels==element]=prediction
+    # t1 = time()
+    # joined_patient = deepcopy(observed_patient)
+    # joined_patient.labelmaps["t2"].data = joined_labels
+    # observation_graph = liver_build_from_patient(joined_patient, vertex_mean, vertex_std, edge_mean, edge_std)
+    # print("Done. {:.4f}s + {:.4f}s".format(t1-t0,time()-t1))
+    #
+    # print(represent_liver_srg(observation_graph,True))
+    #
+    # # Greedy improvement of joined observation graph (by changing the super observation graph
+    # for epoch in range(4):
+    #     # Computing current costs
+    #     current_vertex_costs = compute_cost(observation_graph.vertices, model_graph.vertices)
+    #     current_edge_costs = compute_cost(observation_graph.edges, model_graph.edges)
+    #     print("Starting epoch #{}. Costs are: V={:.2f}; E={:.2f}".format(epoch,np.sum(current_vertex_costs), np.sum(current_edge_costs)))
+    #
+    #     # Attempting to replace every super-observed region
+    #     for i,vertex in enumerate(super_observation_graph.vertices):
+    #         best_pred = solution[i]
+    #         best_cost = compute_cost(vertex,model_graph.vertices[solution[i]])
+    #         for j,potential_prediction in enumerate(model_graph.vertices):
+    #             # reassessing affected vertices and edges (TODO: edges how?)
+    #             observation_graph.vertices[solution[i],:] += vertex / super_count[solution[i]]
+    #             potential_cost = compute_cost(vertex,potential_prediction)
+    #             if potential_cost < best_cost:
+    #                 best_cost = potential_cost
+    #                 best_pred = j
+    #
+    #         #TODO: change only in end of epoch?
+    #         solution[i] = best_pred
+    #
+    #     print("Building joined observation graph... ", end="", flush=True)
+    #     t0 = time()
+    #     joined_labels = np.zeros_like(observed_labels)
+    #     for element, prediction in enumerate(solution):
+    #         joined_labels[observed_labels==element]=prediction
+    #     t1 = time()
+    #     joined_patient = deepcopy(observed_patient)
+    #     joined_patient.labelmaps["t2"].data = joined_labels
+    #     observation_graph = liver_build_from_patient(joined_patient, vertex_mean, vertex_std, edge_mean, edge_std)
+    #     print("Done. {:.4f}s + {:.4f}s".format(t1-t0,time()-t1))
+    #
+    #     display_volume(joined_labels,cmap=ListedColormap(class_colors))
