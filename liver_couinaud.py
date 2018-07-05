@@ -349,10 +349,10 @@ if __name__ == '__main__':
             print("Attempting to improve on supervertex {} (currently {})".format(i, solution[i]))
             print("Current costs are {:.3f}, {:.3f} ({:.4f}s)".format(current_vertex_costs,current_edge_costs, time()-t0))
 
-            working_labels = deepcopy(joined_labels)
             working_patient = deepcopy(joined_patient)
             for j, potential_prediction in enumerate(model_graph.vertices):
                 # updating joined_labels
+                working_labels = deepcopy(joined_labels)
                 working_labels[observed_labels==i] = j
 
                 # recomputing affected parts of the graph
