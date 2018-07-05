@@ -4,6 +4,7 @@ This module contains both functions for generating dummies,
 and for putting them through the segmentation pipeline."""
 
 import numpy as np
+import math
 from scipy.ndimage.measurements import center_of_mass as measure_center_of_mass
 from time import time
 from copy import deepcopy
@@ -82,8 +83,8 @@ def compute_attributes(volume, labelmap, attribute):
     elif attribute == "intensity":
         labels, indexes = np.unique(labelmap, return_inverse=True)
         intensities = np.empty(len(labels))
-        for label in labels:
-            intensities[int(label)] = np.mean(volume.flatten()[indexes==label])
+        for i, label in enumerate(labels):
+            intensities[i] = np.mean(volume.flatten()[indexes==i])
         return intensities
     elif attribute == "size":
         labels,voxel_count_per_labels = np.unique(labelmap, return_counts=True)
@@ -92,34 +93,32 @@ def compute_attributes(volume, labelmap, attribute):
     else:
         raise Exception("{} is not a supported attribute".format(attribute))
 
-def compute_attributes_specific(volume, labelmap, specific_label, attribute):
-    """Computes an specific attribute for an specific label"""
-    if attribute == "centroid":
-        centroids = measure_center_of_mass(labelmap==specific_label)
-        centroids = np.array(centroids)
-        return centroids
-    elif attribute == "intensity":
-        intensities = np.mean(volume[labelmap==specific_label])
-        return intensities
-    elif attribute == "size":
-        sizes = np.array(np.count_nonzero(labelmap == specific_label))
-        return sizes
-    else:
-        raise Exception("{} is not a supported attribute".format(attribute))
-
-def build_graph(volume,labelmap,add_edges=True):
+def build_graph(volume,labelmap,add_edges=True, target_vertices=None):
     """Builds a graph from an annotated volume."""
     # Compute statistical attributes
     centroids = compute_attributes(volume, labelmap, attribute="centroid")
     intensities = compute_attributes(volume, labelmap, attribute="intensity")
     sizes = compute_attributes(volume, labelmap, attribute="size")
+
     # Assemble statistical attributes as the vertex matrix
-    vertices = np.column_stack([centroids, intensities, sizes])
+    if target_vertices is None:
+        vertices = np.column_stack([centroids, intensities, sizes])
+    else:
+        vertices = np.empty((target_vertices, 5))
+        actual_labels = np.unique(labelmap)
+        actual_index = 0
+        for i, label in enumerate(range(target_vertices)):
+            if label in actual_labels:
+                vertices[label] = np.append(centroids[actual_index],(intensities[actual_index],sizes[actual_index]))
+                actual_index += 1
+            else:
+                vertices[label] = np.array([math.inf]*5)
 
     if not add_edges:
         return SRG(vertices, np.array([]), ["centroid_x", "centroid_y", "centroid_z", "intensity", "size"] ,[])
     else:
         # Compute relational attributes
+        centroids = vertices[:,:3]
         positions = np.repeat(centroids, centroids.shape[0],axis=0) - np.vstack([centroids]*centroids.shape[0])
         #contrasts = np.repeat(intensities, intensities.shape[0],axis=0) / np.vstack([intensities]*intensities.shape[0])
         #ratios = np.repeat(sizes, sizes.shape[0],axis=0) / np.vstack([sizes]*sizes.shape[0])
@@ -128,41 +127,6 @@ def build_graph(volume,labelmap,add_edges=True):
 
         # Initializing and returning the SRG
         return SRG(vertices, edges, ["centroid_x", "centroid_y", "centroid_z", "intensity", "size"], ["position"])#, "contrast", "ratio"])
-
-def rebuild_graph(base_graph, volume,labelmap,old,new,add_edges=True):
-    """Rebuilds a graph from a modification of an annotation."""
-    # Copy attributes
-    new_SRG = deepcopy(base_graph)
-    centroids = new_SRG.vertices[:,:3]
-    intensities = new_SRG.vertices[:,3]
-    sizes = new_SRG.vertices[:,4]
-    print(centroids, intensities, sizes)
-    # Compute statistical attributes
-    #BUG: how to solve disappearing vertices??
-    centroids[old] = compute_attributes_specific(volume, labelmap, old, attribute="centroid")
-    intensities[old] = compute_attributes_specific(volume, labelmap, old, attribute="intensity")
-    sizes[old] = compute_attributes_specific(volume, labelmap, old, attribute="size")
-    centroids[new] = compute_attributes_specific(volume, labelmap, new, attribute="centroid")
-    intensities[new] = compute_attributes_specific(volume, labelmap, new, attribute="intensity")
-    sizes[new] = compute_attributes_specific(volume, labelmap, new, attribute="size")
-    # Assemble statistical attributes as the vertex matrix
-
-    print(centroids, intensities, sizes)
-    new_SRG.vertices = np.column_stack([centroids, intensities, sizes])
-
-    if not add_edges:
-        return new_SRG
-    else:
-        # Compute relational attributes
-        positions = np.repeat(centroids, centroids.shape[0],axis=0) - np.vstack([centroids]*centroids.shape[0])
-        #contrasts = np.repeat(intensities, intensities.shape[0],axis=0) / np.vstack([intensities]*intensities.shape[0])
-        #ratios = np.repeat(sizes, sizes.shape[0],axis=0) / np.vstack([sizes]*sizes.shape[0])
-        # Assemble relational attributes as the edges matrix
-        new_SRG.edges = positions#np.concatenate([positions, contrasts, ratios],axis=-1)
-
-        # Initializing and returning the SRG
-        return new_SRG
-
 
 if __name__ == '__main__':
     # Step 1: Loading data (generating dummies)
@@ -214,11 +178,12 @@ if __name__ == '__main__':
     joined_labelmap = np.zeros_like(observed_labelmap)
     for element, prediction in enumerate(solution):
         joined_labelmap[observed_labelmap==element]=prediction
-    observation_graph = build_graph(observation_dummy, joined_labelmap)
+    observation_graph = build_graph(observation_dummy, joined_labelmap, target_vertices=model_graph.vertices.shape[0])
     vertex_costs = np.mean(np.linalg.norm(observation_graph.vertices - model_graph.vertices, axis=-1))
     edge_costs = np.mean(np.linalg.norm(observation_graph.edges - model_graph.edges, axis=-1))
     print("Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
-    display_volume(joined_labelmap, cmap=color_map, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
+    #display_volume(joined_labelmap, cmap=color_map, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
+    print("Observation:",lc.represent_liver_srg(observation_graph))
 
     # Step 7: Improvement
     # -----------------------
@@ -228,6 +193,8 @@ if __name__ == '__main__':
             current_vertex_costs = np.mean(np.linalg.norm(observation_graph.vertices - model_graph.vertices, axis=-1))
             current_edge_costs = np.mean(np.linalg.norm(observation_graph.edges - model_graph.edges, axis=-1))
             current_cost = current_vertex_costs + current_edge_costs
+            # sanity check
+            if math.isnan(current_cost): current_cost = math.inf
 
             for j, potential_prediction in enumerate(model_graph.vertices):
                 # Skipping same replacements
@@ -235,14 +202,16 @@ if __name__ == '__main__':
                 # Replacing the supervertex's labels
                 working_labelmap = deepcopy(joined_labelmap)
                 working_labelmap[observed_labelmap==i] = j
-                display_volume(working_labelmap,cmap=color_map, title="Replacing {}'s label (curr: {}) with {}".format(i, solution[i],j))
+                #display_volume(working_labelmap,cmap=color_map, title="Replacing {}'s label (curr: {}) with {}".format(i, solution[i],j))
                 # Updating graph
-                working_graph = build_graph(observation_dummy, working_labelmap)
+                working_graph = build_graph(observation_dummy, working_labelmap, target_vertices=model_graph.vertices.shape[0])
 
                 # Computing costs
-                potential_vertex_costs = np.mean(np.linalg.norm(observation_graph.vertices - model_graph.vertices, axis=-1))
-                potential_edge_costs = np.mean(np.linalg.norm(observation_graph.edges - model_graph.edges, axis=-1))
+                potential_vertex_costs = np.mean(np.linalg.norm(working_graph.vertices - model_graph.vertices, axis=-1))
+                potential_edge_costs = np.mean(np.linalg.norm(working_graph.edges - model_graph.edges, axis=-1))
                 potential_cost = potential_vertex_costs + potential_edge_costs
+                print("Replacing {}'s label (curr: {}) with {}".format(i, solution[i],j))
+                print("\t cost is {:.2f} (current best: {:.2f})".format(potential_cost,current_cost))
                 # Improving if better
                 if potential_cost < current_cost:
                     current_prediction = j
@@ -254,6 +223,7 @@ if __name__ == '__main__':
             solution[i] = current_prediction
 
         # End of an epoch, rebuilding the joined graph
+        print("End of epoch #{}: solution = {}".format(epoch,solution))
         joined_labelmap = np.zeros_like(observed_labelmap)
         for element, prediction in enumerate(solution):
             joined_labelmap[observed_labelmap==element]=prediction
@@ -262,7 +232,7 @@ if __name__ == '__main__':
         edge_costs = np.mean(np.linalg.norm(observation_graph.edges - model_graph.edges, axis=-1))
         print("Joined Epoch #{} Solution (Costs: {:.3f},{:.3f})".format(epoch, vertex_costs,edge_costs))
         display_volume(joined_labelmap, cmap=color_map, title="Joined Epoch #{} Solution (Costs: {:.3f},{:.3f})".format(epoch, vertex_costs,edge_costs))
-
+        print("Observation:",lc.represent_liver_srg(observation_graph))
 
 
 #TODO: separate normalization function. graph-builder using only maps? or directly objects?
