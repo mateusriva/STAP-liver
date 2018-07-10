@@ -100,3 +100,27 @@ def display_solution(observed_labelmap, solution, **kwargs):
     for element, prediction in enumerate(solution):
         predicted_labelmap[observed_labelmap==element]=prediction
     display_volume(predicted_labelmap, **kwargs)
+
+def represent_srg(object_graph,class_names=None,vertex_range=None):
+    """Returns a SRG as an human readable string.
+    """
+    representation = str(object_graph)
+    if vertex_range is None:
+        represent_vertices = object_graph.vertices
+    else:
+        represent_vertices = object_graph.vertices[vertex_range[0]:vertex_range[1]]
+
+    representation += "\n#\tClasses\t"
+    for attr in object_graph.vertex_attributes:
+        representation += "\t|{}".format(attr)
+    representation += "\n"
+    for i, vertex in enumerate(represent_vertices):
+        if class_names is not None:
+            representation += "{}\t{}".format(i,class_names[i])
+        else:
+            representation += "{}\t\t".format(i)
+        for j in range(len(object_graph.vertex_attributes)):
+            representation += "\t|{:.3f}\t".format(vertex[j])
+        representation += "\n"
+
+    return representation
