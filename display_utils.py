@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.measure import marching_cubes_lewiner
 from skimage.segmentation import mark_boundaries
+from skimage.color import rgb2hsv, hsv2rgb, gray2rgb
 
 class IndexTracker(object):
     """This class creates a 3D plot split by slices
@@ -124,3 +125,27 @@ def represent_srg(object_graph,class_names=None,vertex_range=None):
         representation += "\n"
 
     return representation
+
+def display_overlayed_volume(volume, labelmap, label_colors, label_opacity=0.5, width=700, level=300, **kwargs):
+    """Overlays a labelmap on a volume with transparent labels."""
+    # window leveling
+    leveled = volume.astype(float)
+    leveled = (leveled-(level-(width/2)))/(width)
+    leveled[leveled < 0.0] = 0.0
+    leveled[leveled > 1.0] = 1.0
+
+    # building line overlay from labelmap
+    overlayed = np.empty_like(leveled).repeat(3,-1).reshape((leveled.shape[0], leveled.shape[1], leveled.shape[2], 3))
+    for i, pack in enumerate(zip(np.rollaxis(leveled,2),np.rollaxis(labelmap,2))):
+        leveled_slice, label_slice = pack
+        display_slice = rgb2hsv(gray2rgb(leveled_slice))
+        color_slice = np.empty((label_slice.shape[0], label_slice.shape[1], 3), dtype=float)
+        for x,row in enumerate(label_slice):
+            for y,pixel in enumerate(row):
+                color_slice[x,y] = label_colors[pixel]
+        color_slice = rgb2hsv(color_slice)
+        display_slice[..., 0] = color_slice[..., 0]
+        display_slice[..., 1] = color_slice[..., 1] * label_opacity
+        overlayed[...,i,:] = hsv2rgb(display_slice)
+
+    display_color_volume(overlayed, **kwargs)

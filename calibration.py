@@ -13,6 +13,7 @@ from skimage.morphology import watershed, h_minima, ball, local_minima
 from skimage.color import rgb2gray
 import scipy.ndimage as ndi
 from matplotlib.colors import ListedColormap
+from skimage.util import random_noise
 
 from srg import SRG
 from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg
@@ -92,6 +93,23 @@ def generate_checkerboard_dummy(board_shape,region_size,region_intensities):
         label = np.repeat(label, size, axis=axis)
     return dummy, label
 
+def generate_moons_dummy(radius_1, radius_2, distance, color_1, color_2):
+    """Generates two spheres (where 2 overlaps 1)"""
+    dummy = np.zeros(((radius_1)+(radius_2)+distance+20, max(radius_1,radius_2)*2+20, max(radius_1,radius_2)*2+20))
+    placeholder1, placeholder2 = np.zeros_like(dummy), np.zeros_like(dummy)
+    # Computing center of moons:
+    center = max(radius_1, radius_2) + 11
+    # First moon
+    placeholder1[center-radius_1:center+radius_1+1,center-radius_1:center+radius_1+1,center-radius_1:center+radius_1+1] = ball(radius_1)*color_1
+    # Second moon
+    placeholder2[-(center+radius_2+1):-(center-radius_2),-(center+radius_2+1):-(center-radius_2),-(center+radius_2+1):-(center-radius_2)] = ball(radius_2)*color_2
+    dummy[placeholder1==color_1] = color_1
+    dummy[placeholder2==color_2] = color_2
+    label = np.zeros_like(dummy)
+    label[dummy == color_1] = 1
+    label[dummy == color_2] = 2
+    return dummy, label
+
 def compute_attributes(volume, labelmap, attribute):
     """Computes an specific attribute for an entire volume"""
     if attribute == "centroid":
@@ -150,12 +168,14 @@ def build_graph(volume,labelmap,add_edges=True, target_vertices=None):
 if __name__ == '__main__':
     # Step 1: Loading data (generating dummies)
     # -----------------------
-    model_dummy, model_labelmap = generate_dummy(3), generate_dummy_label(3)
+    #model_dummy, model_labelmap = generate_dummy(3), generate_dummy_label(3)
     #model_dummy, model_labelmap = generate_checkerboard_dummy((4,4,2), (30,30,30), np.arange(4*4*2)*50)
+    model_dummy, model_labelmap = generate_moons_dummy(20,20,3,1,0.5)
     display_volume(model_dummy, cmap="gray", title="Model Input")
     #observation_dummy = generate_dummy(2)
-    observation_dummy = np.random.normal(model_dummy, 20)
-    #observation_dummy = deepcopy(model_dummy)
+    #observation_dummy = np.random.normal(model_dummy, 20)
+    #observation_dummy = random_noise(model_dummy, "s&p", seed=10, amount=0.05)
+    observation_dummy = deepcopy(model_dummy)
     display_volume(observation_dummy, cmap="gray", title="Observation Input")
     color_map = ListedColormap([(1,0,0),(0,1,0),(0,0,1),(1,1,0),(1,0,1),(0,1,1)])
 
@@ -227,6 +247,7 @@ if __name__ == '__main__':
                 #display_volume(working_labelmap,cmap=color_map, title="Replacing {}'s label (curr: {}) with {}".format(i, solution[i],j))
                 # Updating graph
                 working_graph = build_graph(observation_dummy, working_labelmap, target_vertices=model_graph.vertices.shape[0])
+                #print(represent_srg(working_graph))
 
                 # Computing costs
                 potential_vertex_costs = np.mean(np.linalg.norm(working_graph.vertices - model_graph.vertices, axis=-1))

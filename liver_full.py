@@ -20,7 +20,7 @@ from matplotlib.colors import ListedColormap
 
 from srg import SRG
 from patient import Patient, LabelMap, Volume
-from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg
+from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
 
 """Display definitions"""
 class_names = ["BG Posterior","BG Anterior","BG OtherBody","Vena Cava","Portal Vein","Left H. Vein","Middle H. Vein","Right H. Vein","Liver"]
@@ -104,8 +104,9 @@ if __name__ == '__main__':
     model_labelmap.data += 2 # Adding space for the extra labels at the start
     model_labelmap.data[np.logical_and(model_volume.data < 10, model_labelmap.data == 2)] = 0 # posterior background is 0
     model_labelmap.data[model_labelmap.data.shape[1]//2:,:,:][model_labelmap.data[model_labelmap.data.shape[1]//2:,:,:] == 0] = 1 # anterior background is 1
-    model_labelmap.data[model_labelmap.data >= 8] = 8
-    model_labelmap.header["num_labels"] = 9
+    model_labelmap.data[model_labelmap.data >= 4] = 4
+    model_labelmap.header["num_labels"] = 5
+    display_overlayed_volume(model_volume.data, model_labelmap.data, label_colors=[(0,0,0),(0.5,0.5,0.5),(1,1,1),(0,0,1),(1,0,0)], title="Model")
 
     observation_volume = deepcopy(model_volume)
 
@@ -162,6 +163,7 @@ if __name__ == '__main__':
     edge_costs = np.mean(np.linalg.norm(observation_graph.edges - model_graph.edges, axis=-1))
     print("Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
     #display_volume(joined_labelmap.data, cmap=class_colors, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
+    display_overlayed_volume(observation_volume.data, joined_labelmap.data, label_colors=[(0,0,0),(0.5,0.5,0.5),(1,1,1),(0,0,1),(1,0,0)], title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(vertex_costs,edge_costs))
     print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
     # Step 7: Improvement
