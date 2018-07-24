@@ -79,7 +79,7 @@ def display_color_volume(X, **kwargs):
     plt.show()
 
 def display_segments_as_lines(volume, labelmap, width=700, level=300, **kwargs):
-    """Overlays a labelmap on a volume using red border lines."""
+    """Overlays a labelmap on a volume using yellow border lines."""
     # window leveling
     leveled = volume.astype(float)
     leveled = (leveled-(level-(width/2)))/(width)
