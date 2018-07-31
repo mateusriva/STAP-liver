@@ -13,7 +13,7 @@ from skimage.util import random_noise
 from skimage.filters import try_all_threshold, threshold_otsu
 
 from srg import SRG
-from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg
+from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
 color_map = ListedColormap([(1,0,0),(0,1,0),(0,0,1),(1,1,0),(1,0,1),(0,1,1)])
 
 def generate_dummy(flavor):
@@ -127,14 +127,14 @@ def generate_liver_phantom_dummy():
 
     return dummy, labelmap
 
-def generate_fat_salt_and_pepper_noise(volume,radius=3, amount=0.05):
+def generate_fat_salt_and_pepper_noise(volume,radius=3, amount=0.05, seed=None):
     """Generates salt and pepper spheres in a volume"""
     salt_volume, pepper_volume = np.zeros_like(volume), np.ones_like(volume)
 
-    salt_volume = random_noise(salt_volume, mode="salt", amount=amount)
-    salt_volume = ndi.binary_dilation(salt_volume,iterations=radius)
-    pepper_volume = random_noise(pepper_volume, mode="pepper", amount=amount)
-    pepper_volume = ndi.binary_erosion(pepper_volume,iterations=radius)
+    salt_volume = random_noise(salt_volume, mode="salt", amount=amount, seed=seed)
+    salt_volume = ndi.binary_dilation(salt_volume,iterations=radius, border_value=0)
+    pepper_volume = random_noise(pepper_volume, mode="pepper", amount=amount, seed=seed+1)
+    pepper_volume = ndi.binary_erosion(pepper_volume,iterations=radius, border_value=1)
 
     new_volume = deepcopy(volume)
     new_volume[salt_volume == True] = 1
@@ -207,6 +207,7 @@ def normalize_graph(graph, mean_vertex=None, std_vertex=None, mean_edge=None, st
     vertices = graph.vertices
     if mean_vertex is None: mean_vertex = vertices.mean(axis=0)
     if std_vertex is None: std_vertex = vertices.std(axis=0)
+    std_vertex[std_vertex==0] = 1
     vertices = (vertices - mean_vertex) / std_vertex
     graph.vertices = vertices
 
@@ -214,6 +215,7 @@ def normalize_graph(graph, mean_vertex=None, std_vertex=None, mean_edge=None, st
         edges = graph.edges
         if mean_edge is None: mean_edge = edges.mean(axis=0)
         if std_edge is None: std_edge = edges.std(axis=0)
+        std_edge[std_edge==0] = 1
         edges = (edges - mean_edge) / std_edge
         graph.edges = edges
 
@@ -225,6 +227,25 @@ def normalize_graph(graph, mean_vertex=None, std_vertex=None, mean_edge=None, st
 def compute_initial_vertex_cost(vertices1, vertices2, weights=None):
     """Computes initial vertex cost (ignoring size)"""
     if weights is None:
-        weights = np.ones(vertices1.shape[1]-1)/(vertices1.shape[1]-1)
+        weights = np.ones(vertices1.shape[1]-1)
+    weights = np.array(weights)/sum(weights)
     costs = np.linalg.norm(weights*(vertices1[:,:-1]-vertices2[:,:-1]), axis=-1)
+    return costs
+
+
+def compute_vertex_cost(vertices1, vertices2, weights=None):
+    """Computes initial vertex cost (ignoring size)"""
+    if weights is None:
+        weights = np.ones(vertices1.shape[1])
+    weights = np.array(weights)/sum(weights)
+    costs = np.linalg.norm(weights*(vertices1-vertices2), axis=-1)
+    return costs
+
+
+def compute_edge_cost(edges1, edges2, weights=None):
+    """Computes edge cost (using vector dissimilarity)"""
+    if weights is None:
+        weights = np.ones(edges1.shape[1])
+    weights = np.array(weights)/sum(weights)
+    costs = np.linalg.norm(weights*(edges1-edges2), axis=-1)
     return costs
