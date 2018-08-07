@@ -30,7 +30,7 @@ model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[b
 #observation_dummy = generate_dummy(2)
 #observation_dummy = np.random.normal(model_dummy, 20)
 #observation_dummy = deepcopy(model_dummy)
-observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.00001, seed=0)
+observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.000015, seed=0)
 observation_dummy[np.logical_or(model_labelmap == 0, model_labelmap == 1)] = 0
 #observation_dummy = random_noise(model_dummy, "speckle", seed=10) #amount=0.05)
 # display_volume(observation_dummy, cmap="gray", title="Observation Input")
@@ -54,11 +54,11 @@ magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(s
 # Labeling local_minima
 # markers, total_markers = ndi.label(volume_local_minima)
 # observed_labelmap = watershed(magnitude,markers=markers)-1
-observed_labelmap = watershed(magnitude, markers=500)-1
+observed_labelmap = watershed(magnitude, markers=500, compactness=0.001)-1
 # observed_labelmap = skis.slic(observation_dummy, n_segments=500,
                     # compactness=0.0001, multichannel=False, sigma=(5,5,1))
-#display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
-#display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
+display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
+# display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
 #display_overlayed_volume(observation_dummy, observed_labelmap, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
 # Step 4: Generating super-observation graph
@@ -102,7 +102,7 @@ print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
 # Step 7: Improvement
 # -----------------------
-total_epochs = 100#len(solution)
+total_epochs = 200#len(solution)
 improvement_cutoff = 1#len(solution) # TODO: convergence? cutoff by cost difference?
 for epoch in range(total_epochs):
     # attempting to improve each vertex, starting from the most expensive
