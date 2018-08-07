@@ -15,7 +15,8 @@ import skimage.future.graph as rag
 
 from srg import SRG
 from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
-color_map = ListedColormap([(1,0,0),(0,1,0),(0,0,1),(1,1,0),(1,0,1),(0,1,1)])
+color_map = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(1,0,0),(0,1,0)])
+class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Vena Cava", "Full Liver"]
 
 def generate_dummy(flavor):
     """Generates dummy data.
@@ -188,14 +189,16 @@ def build_graph(volume,labelmap,add_edges=True, target_vertices=None):
     else:
         # Compute relational attributes
         centroids = vertices[:,:3]
+        intensities = vertices[:,3]
+        sizes = vertices[:,4]
         positions = np.repeat(centroids, centroids.shape[0],axis=0) - np.vstack([centroids]*centroids.shape[0])
-        #contrasts = np.repeat(intensities, intensities.shape[0],axis=0) / np.vstack([intensities]*intensities.shape[0])
-        #ratios = np.repeat(sizes, sizes.shape[0],axis=0) / np.vstack([sizes]*sizes.shape[0])
+        contrasts = abs(np.repeat(intensities, intensities.shape[0],axis=0) - np.hstack([intensities]*intensities.shape[0]))
+        ratios = np.repeat(sizes, sizes.shape[0],axis=0) / np.hstack([sizes]*sizes.shape[0])
         # Assemble relational attributes as the edges matrix
-        edges = positions#np.concatenate([positions, contrasts, ratios],axis=-1)
+        edges = np.column_stack([positions, contrasts, ratios])
 
         # Initializing and returning the SRG
-        return SRG(vertices, edges, ["centroid_x", "centroid_y", "centroid_z", "intensity", "size"], ["position"])#, "contrast", "ratio"])
+        return SRG(vertices, edges, ["centroid_x", "centroid_y", "centroid_z", "intensity", "size"], ["position_x","position_y","position_z","contrast","ratio"])#, "contrast", "ratio"])
 
 def normalize_graph(graph, mean_vertex=None, std_vertex=None, mean_edge=None, std_edge=None):
     """Normalizes a graph's vertex and edge attributes to a given mean and std.
