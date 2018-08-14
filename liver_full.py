@@ -24,9 +24,10 @@ model_labelmap.data += 1 # Adding space for the automatic "body" label
 model_labelmap.data[np.logical_and(model_volume.data < 10, model_labelmap.data == 1)] = 0 # automatic body
 model_labelmap.data += 1 # Adding space for the split background
 model_labelmap.data[:model_labelmap.data.shape[1]//2,:,:][model_labelmap.data[:model_labelmap.data.shape[1]//2,:,:] == 1] = 0 # splitting background
-model_labelmap.data[model_labelmap.data >= 4] = 4
+model_labelmap.data[model_labelmap.data == 3] = 2 # vena cava is body
+model_labelmap.data[model_labelmap.data >= 4] = 3 # portal, hepatic veins are 'liver'
 # getting center of body
-body_center = [int(x) for x in measure_center_of_mass(np.ones_like(model_labelmap.data), labels=model_labelmap.data, index=range(5))[2]]
+body_center = [int(x) for x in measure_center_of_mass(np.ones_like(model_labelmap.data), labels=model_labelmap.data, index=range(4))[2]]
 model_labelmap.data = model_labelmap.data + 7 # adding space for the body divisions
 model_labelmap.data[model_labelmap.data == 7] = 0
 model_labelmap.data[model_labelmap.data == 8] = 1
@@ -166,7 +167,7 @@ observation_graph = build_graph(observation_volume.data, joined_labelmap_data, t
 observation_graph = normalize_graph(observation_graph, mean_vertex, std_vertex, mean_edge, std_edge)
 vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
 edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
-dice = (2. * np.logical_and(joined_labelmap_data==11, model_labelmap.data == 11))/((joined_labelmap_data==11).sum() + (model_labelmap.data == 11).sum())
+dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
 print("Contiguous Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
@@ -182,7 +183,7 @@ observation_graph = build_graph(observation_volume.data, joined_labelmap_data, t
 observation_graph = normalize_graph(observation_graph, mean_vertex, std_vertex, mean_edge, std_edge)
 vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
 edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
-dice = (2. * np.logical_and(joined_labelmap_data==11, model_labelmap.data == 11))/((joined_labelmap_data==11).sum() + (model_labelmap.data == 11).sum())
+dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
 print("Joined Initial Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
 display_volume(joined_labelmap_data, cmap=class_colors, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
@@ -243,12 +244,12 @@ for epoch in range(total_epochs):
     observation_graph = normalize_graph(observation_graph, mean_vertex, std_vertex, mean_edge, std_edge)
     vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
     edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
-    dice = (2. * np.logical_and(joined_labelmap_data==11, model_labelmap.data == 11))/((joined_labelmap_data==11).sum() + (model_labelmap.data == 11).sum())
+    dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
     print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
     #display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
     print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-dice = (2. * np.logical_and(joined_labelmap_data==11, model_labelmap.data == 11))/((joined_labelmap_data==11).sum() + (model_labelmap.data == 11).sum())
+dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
 print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
 display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
 

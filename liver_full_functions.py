@@ -16,8 +16,10 @@ import skimage.future.graph as rag
 from srg import SRG
 from patient import Patient, LabelMap, Volume
 from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
-class_colors = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(1,0,0),(0,1,0)])
-class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Vena Cava", "Full Liver"]
+#class_colors = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(1,0,0),(0,1,0)])
+#class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Vena Cava", "Full Liver"]
+class_colors = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(0,1,0)])
+class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Full Liver"]
 
 
 
