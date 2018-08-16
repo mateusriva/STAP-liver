@@ -8,7 +8,10 @@ for the SRG, in order to make it segment livers.
 Authors:
  * Mateus Riva (mriva@ime.usp.br)
 """
-
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir) 
 from liver_full_functions import *
 
 initial_weights = (1,1,1,1)
@@ -85,7 +88,6 @@ for i, super_vertex in enumerate(super_graph.vertices):
 #     print("\t{}: {}".format(i, prediction))
 
 
-#print("End of epoch #{}: solution = {}".format(epoch,solution))
 joined_labelmap_data = np.zeros_like(observed_labelmap_data)
 for label, model_vertex in enumerate(model_graph.vertices):
     joined_labelmap_data[np.isin(observed_labelmap_data, np.where(solution==label))]=label
