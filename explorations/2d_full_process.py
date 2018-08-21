@@ -22,8 +22,8 @@ graph_weights = (1,1)
 # -----------------------
 model_patient = Patient.build_from_folder("data/4")
 model_volume, model_labelmap = model_patient.volumes['t2'], model_patient.labelmaps['t2']
-model_volume.data = model_volume.data[...,30:32]
-model_labelmap.data = model_labelmap.data[...,30:32]
+model_volume.data = model_volume.data[...,26:34]
+model_labelmap.data = model_labelmap.data[...,26:34]
 # Reconfiguring model_labelmap with extra backgrounds and unified liver
 model_labelmap.data += 1 # Adding space for the automatic "body" label
 model_labelmap.data[np.logical_and(model_volume.data < 10, model_labelmap.data == 1)] = 0 # automatic body
@@ -55,9 +55,10 @@ print("Model:",represent_srg(model_graph, class_names=class_names))
 
 # Step 3: Generating observation
 # -----------------------
-observed_labelmap_data = np.empty_like(observation_volume.data)
+observed_labelmap_data = np.zeros_like(observation_volume.data)
 current_start_region = 0
 # Iterating over slice
+i = 0
 for i in range(observation_volume.data.shape[2]):
     slice = observation_volume.data[:,:,i]
     # Applying gradient
@@ -67,7 +68,7 @@ for i in range(observation_volume.data.shape[2]):
     magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(smoothed, axis=1)**2)
     #display_volume(magnitude, cmap="gray", title="Magnitude")
     observed_labelmap_data[:,:,i] = watershed(magnitude, markers=400, compactness=0.001)-1 + current_start_region
-    current_start_region = len(np.unique(observed_labelmap_data))-1
+    current_start_region = np.max(observed_labelmap_data)+1
 # display_segments_as_lines(observation_volume.data, observed_labelmap_data)
 # display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(800,3)))
 #display_overlayed_volume(observation_volume.data, observed_labelmap_data, label_colors=np.random.rand(255,3),width=1,level=0.5)
@@ -195,6 +196,16 @@ dice = (2. * np.logical_and(joined_labelmap_data==6, model_labelmap.data==6)).su
 print("Joined Initial Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
 display_volume(joined_labelmap_data, cmap=class_colors, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
+
+# Displaying 3d point cloud for real and predicted liver
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+# plotting prediction
+ax.scatter(np.where(joined_labelmap_data==6)[0][::400], np.where(joined_labelmap_data==6)[1][::400],np.where(joined_labelmap_data==6)[2][::400], c="green")
+ax.scatter(np.where(model_labelmap.data==6)[0][::400], np.where(model_labelmap.data==6)[1][::400],np.where(model_labelmap.data==6)[2][::400], c="red")
+plt.show()
 
 # Step 7: Improvement
 # -----------------------
