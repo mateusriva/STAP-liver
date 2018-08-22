@@ -9,8 +9,8 @@ Author
 
 from liver_couinaud_functions import *
 
-initial_weights = (2,2,0.5,1)
-vertex_weights = (1,1,0.5,1,10)
+initial_weights = (1,1,1,1)
+vertex_weights = (1,1,1,1,10)
 edge_weights = (1,1,1,1,1)
 graph_weights = (1,4)
 
@@ -25,12 +25,15 @@ model_volume, model_labelmap = model_patient.volumes['t2'], model_patient.labelm
 # Observation comes from the bounding box given as input
 observation_volume = deepcopy(model_volume)
 observation_volume.data = observation_volume.data[observation_bounding_box[0][0]:observation_bounding_box[1][0],observation_bounding_box[0][1]:observation_bounding_box[1][1],observation_bounding_box[0][2]:observation_bounding_box[1][2]]
-display_volume(observation_volume.data,cmap='gray')
+# display_volume(observation_volume.data,cmap='gray')
 
 # The model utilizes the precise bounding box of the true liver
 model_bounding_box = (np.argwhere(model_labelmap.data >= 6).min(axis=0),np.argwhere(model_labelmap.data >= 6).max(axis=0))
 model_volume.data = model_volume.data[model_bounding_box[0][0]:model_bounding_box[1][0],model_bounding_box[0][1]:model_bounding_box[1][1],model_bounding_box[0][2]:model_bounding_box[1][2]]
 model_labelmap.data = model_labelmap.data[model_bounding_box[0][0]:model_bounding_box[1][0],model_bounding_box[0][1]:model_bounding_box[1][1],model_bounding_box[0][2]:model_bounding_box[1][2]]
+
+# NOTE: this is an experiment with a "perfect" bounding box
+observation_volume = deepcopy(model_volume)
 
 # getting center of body
 body_center = [int(x) for x in measure_center_of_mass(np.ones_like(model_labelmap.data), labels=model_labelmap.data, index=range(4))[2]]
@@ -195,7 +198,7 @@ display_volume(joined_labelmap_data, cmap=class_colors, title="Contiguous Soluti
 
 # Step 7: Improvement
 # -----------------------
-total_epochs = len(solution)//4
+total_epochs = len(solution)
 improvement_cutoff = 1#len(solution) # TODO: convergence? cutoff by cost difference?
 for epoch in range(total_epochs):
     # attempting to improve each vertex, starting from the most expensive
