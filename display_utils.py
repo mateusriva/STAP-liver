@@ -149,3 +149,15 @@ def display_overlayed_volume(volume, labelmap, label_colors, label_opacity=0.5, 
         overlayed[...,i,:] = hsv2rgb(display_slice)
 
     display_color_volume(overlayed, **kwargs)
+
+
+
+def display_volumes(X, Y, **kwargs):
+    """Displays two volumes X,Y with a scroller"""
+    fig,axes=plt.subplots(1,2)
+    ax1,ax2 = axes
+    tracker1 = IndexTracker(ax1, X, **kwargs)
+    fig.canvas.mpl_connect('scroll_event', tracker1.onscroll)
+    tracker2 = IndexTracker(ax2, Y, **kwargs)
+    fig.canvas.mpl_connect('scroll_event', tracker2.onscroll)
+    plt.show()

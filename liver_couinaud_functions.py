@@ -15,7 +15,7 @@ import skimage.future.graph as rag
 
 from srg import SRG
 from patient import Patient, LabelMap, Volume
-from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
+from display_utils import *
 class_colors = ListedColormap([(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(0,0,1),(0,1,1),(0.5,0,1),(0,0.5,1),(0,0,0.5),(1,0,0),(1,0.5,0),(0.5,0.5,0),(0,1,0),(0,0.5,0),(1,0.5,1),(0.5,0,0.5),(1,1,0),(1,0,1)])
 class_names = ["BG 1       ", "BG 2       ", "BG 3       ", "BG 4       ", "BG 5       ", "BG 6       ", "BG 7       ", "BG 8       ", "Vena Cava","Portal Vein","Left H. Vein","Middle H. Vein","Right H. Vein","Segment I","Segment II","Segment III","Segment IVa","Segment IVb","Segment V","Segment VI","Segment VII","Segment VIII"]
 
@@ -131,3 +131,7 @@ def compute_edge_cost(edges1, edges2, weights=None):
     weights = np.array(weights)/sum(weights)
     costs = np.linalg.norm(weights*(edges1-edges2), axis=-1)
     return costs
+
+def compute_dice(truth, prediction, labels):
+    """Computes Dice coefficient for given labels"""
+    return [(2. * np.logical_and(prediction==label, truth == label)).sum()/((prediction==label).sum() + (truth == label).sum()) for label in labels]

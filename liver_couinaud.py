@@ -99,11 +99,14 @@ observation_graph = normalize_graph(observation_graph, mean_vertex, std_vertex, 
 vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
 edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
 # dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
-dice = 0
-print("Initial Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
+dices=compute_dice(truth=model_labelmap.data, prediction=joined_labelmap_data, labels=range(13,22))
+print("Initial Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), np.mean(dices)))
+print("Dice per label:")
+for label,name,dice in zip(range(13,22),class_names[13:22],dices):
+    print("\t{} ({}): {:.5f}".format(label, name, dice))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-display_volume(joined_labelmap_data, cmap=class_colors, title="Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+display_volumes(joined_labelmap_data,model_labelmap.data, cmap=class_colors, title="Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 
 
 
@@ -190,11 +193,14 @@ observation_graph = normalize_graph(observation_graph, mean_vertex, std_vertex, 
 vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
 edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
 # dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
-dice = 0
-print("Contiguous Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
+dices=compute_dice(truth=model_labelmap.data, prediction=joined_labelmap_data, labels=range(13,22))
+print("Contiguous Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), np.mean(dices)))
+print("Dice per label:")
+for label,name,dice in zip(range(13,22),class_names[13:22],dices):
+    print("\t{} ({}): {:.5f}".format(label, name, dice))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-display_volume(joined_labelmap_data, cmap=class_colors, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+display_volumes(joined_labelmap_data,model_labelmap.data, cmap=class_colors, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 
 # Step 7: Improvement
 # -----------------------
@@ -253,12 +259,15 @@ for epoch in range(total_epochs):
     vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
     edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
     # dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
-    dice = 0
-    print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
-    #display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
-    print("Observation:",represent_srg(observation_graph, class_names=class_names))
+    dices=compute_dice(truth=model_labelmap.data, prediction=joined_labelmap_data, labels=range(13,22))
+    print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), np.mean(dices)))
+    #display_volumes(joined_labelmap_data,model_labelmap.data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
+    #print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
 # dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
-dice=0
-print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
-display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
+dices=compute_dice(truth=model_labelmap.data, prediction=joined_labelmap_data, labels=range(13,22))
+print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Mean Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), np.mean(dices)))
+print("Dice per label:")
+for label,name,dice in zip(range(13,22),class_names[13:22],dices):
+    print("\t{} ({}): {:.5f}".format(label, name, dice))
+display_volumes(joined_labelmap_data,model_labelmap.data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
