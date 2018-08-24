@@ -12,7 +12,7 @@ from liver_couinaud_functions import *
 initial_weights = (1,1,1,1)
 vertex_weights = (1,1,1,1,10)
 edge_weights = (1,1,1,1,1)
-graph_weights = (1,4)
+graph_weights = (1,1)
 
 observation_bounding_box = ([121,  62,   0],[354, 339,  41])
 
@@ -59,16 +59,21 @@ print("Model:",represent_srg(model_graph, class_names=class_names))
 # Step 3: Generating observation
 # -----------------------
 # Applying gradient
-smoothed = ndi.gaussian_filter(observation_volume.data, (3,3,1))
+smoothed = ndi.gaussian_filter(observation_volume.data, (5,5,3))
 smoothed = smoothed/np.max(smoothed) # normalization for magnitude
 # display_volume(smoothed, cmap="gray")
 magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(smoothed, axis=1)**2 + ndi.filters.sobel(smoothed, axis=2)**2)
 # display_volume(magnitude, cmap="gray", title="Magnitude")
-observed_labelmap_data = watershed(magnitude, markers=1000, compactness=0.01)-1
+volume_local_minima = local_minima(magnitude, selem=np.ones((11,11,3)))
+#display_volume(volume_local_minima)
+# Labeling local_minima
+markers, total_markers = ndi.label(volume_local_minima)
+observed_labelmap_data = watershed(magnitude,markers=markers)-1
+# observed_labelmap_data = watershed(magnitude, markers=1000, compactness=0.1)-1
 # observed_labelmap_data = skis.slic(observation_volume.data, n_segments=500,
 #                     compactness=0.0001, multichannel=False, sigma=(5,5,1))
 display_segments_as_lines(observation_volume.data, observed_labelmap_data)
-display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(255,3)))
+# display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(1000,3)))
 # display_overlayed_volume(observation_volume.data, observed_labelmap_data, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
 # Step 4: Generating super-observation graph
