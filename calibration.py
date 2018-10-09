@@ -35,10 +35,10 @@ model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[b
 #observation_dummy = generate_dummy(2)
 #observation_dummy = np.random.normal(model_dummy, 20)
 #observation_dummy = deepcopy(model_dummy)
-observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.00004, seed=0)
+observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.00001, seed=0)
 observation_dummy[np.logical_or(model_labelmap == 0, model_labelmap == 1)] = 0
 #observation_dummy = random_noise(model_dummy, "speckle", seed=10) #amount=0.05)
-display_volume(observation_dummy, cmap="gray", title="Observation Input")
+# display_volume(observation_dummy, cmap="gray", title="Observation Input")
 
 # Step 2: Generating model graph
 # -----------------------
@@ -63,7 +63,7 @@ observed_labelmap = watershed(magnitude, markers=500, compactness=0.001)-1
 # observed_labelmap = skis.slic(observation_dummy, n_segments=500,
                     # compactness=0.0001, multichannel=False, sigma=(5,5,1))
 # display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
-display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
+# display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
 #display_overlayed_volume(observation_dummy, observed_labelmap, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
 # Step 4: Generating super-observation graph
@@ -171,7 +171,7 @@ edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weigh
 print("Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-display_volume(joined_labelmap, cmap=color_map, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+# display_volume(joined_labelmap, cmap=color_map, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 
 # Step 7: Region Joining TODO: add above?
 # -----------------------
@@ -248,6 +248,12 @@ for epoch in range(total_epochs):
     #display_volume(joined_labelmap, cmap=color_map, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
     print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-display_volume(joined_labelmap, cmap=color_map, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
+# display_volume(joined_labelmap, cmap=color_map, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
 
-# TODO: histogramas dos atributos
+
+# saving NRRDs
+import nrrd
+nrrd.write("calibration_phantom.nrrd", model_dummy)
+nrrd.write("calibration_noise_2e-5.nrrd", observation_dummy)
+nrrd.write("calibration_truth.nrrd", model_labelmap)
+nrrd.write("calibration_prediction.nrrd", joined_labelmap)
