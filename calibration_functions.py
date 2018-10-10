@@ -253,3 +253,16 @@ def compute_edge_cost(edges1, edges2, weights=None):
     weights = np.array(weights)/sum(weights)
     costs = np.linalg.norm(weights*(edges1-edges2), axis=-1)
     return costs
+
+def anisotropic_seeds(shape, amounts):
+    """Like `skimage.util.regular_seeds` but anisotropic. Only works for 3D images."""
+    assert len(shape)==3, "Only 3D is implemented"
+    assert len(shape)==len(amounts)
+    steps = [axis//amount for axis,amount in zip(shape,amounts)]
+    seeds = np.zeros(shape)
+    seeds[shape[0]//(2*amounts[0])::shape[0]//amounts[0],shape[1]//(2*amounts[1])::shape[1]//amounts[1],shape[2]//(2*amounts[2])::shape[2]//amounts[2]]=1
+    return seeds
+
+def dice_coefficient(dist1, dist2):
+    """Computes Dice's coefficient (similarity index) between two samples"""
+    return (2. * np.logical_and(dist1, dist2)).sum()/((dist1).sum() + (dist2).sum())

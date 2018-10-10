@@ -1,9 +1,4 @@
-"""This script computes the dice cost for an "optimal" solution built from the ground truth."""
-
-"""Full Liver segmentation module for the SRG.
-
-This module contains specific configurations
-for the SRG, in order to make it segment livers.
+"""This script computes the dice cost for an "optimal" solution built from the ground truth.
 
 Authors:
  * Mateus Riva (mriva@ime.usp.br)
@@ -11,7 +6,7 @@ Authors:
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+sys.path.insert(0,parentdir)
 from liver_full_functions import *
 
 initial_weights = (1,1,1,1)
