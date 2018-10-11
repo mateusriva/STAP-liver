@@ -135,7 +135,9 @@ def generate_fat_salt_and_pepper_noise(volume,radius=3, amount=0.05, seed=None):
 
     salt_volume = random_noise(salt_volume, mode="salt", amount=amount, seed=seed)
     salt_volume = ndi.binary_dilation(salt_volume,iterations=radius, border_value=0)
-    pepper_volume = random_noise(pepper_volume, mode="pepper", amount=amount, seed=seed+1)
+    if seed is not None:
+        seed += 1
+    pepper_volume = random_noise(pepper_volume, mode="pepper", amount=amount, seed=seed)
     pepper_volume = ndi.binary_erosion(pepper_volume,iterations=radius, border_value=1)
 
     new_volume = deepcopy(volume)
