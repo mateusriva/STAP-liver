@@ -69,17 +69,17 @@ all_as = [traditional_watershed, compact_watershed_886, compact_watershed_10108,
 model_dummy, model_labelmap = generate_liver_phantom_dummy()
 # Splitting the model: body into 8, bg into 2
 body_center = [int(x) for x in measure_center_of_mass(np.ones_like(model_labelmap), labels=model_labelmap, index=range(4))[1]]
-model_labelmap = model_labelmap + 8
-model_labelmap[model_labelmap.shape[1]//2:,:,:][model_labelmap[model_labelmap.shape[1]//2:,:,:] == 8] = 1
-model_labelmap[model_labelmap == 8] = 0
-# Splitting the body into 8 cubes, based on centroid
-model_labelmap[:body_center[0],:body_center[1],:body_center[2]][model_labelmap[:body_center[0],:body_center[1],:body_center[2]] == 9] = 2
-model_labelmap[:body_center[0],:body_center[1],body_center[2]:][model_labelmap[:body_center[0],:body_center[1],body_center[2]:] == 9] = 3
-model_labelmap[:body_center[0],body_center[1]:,:body_center[2]][model_labelmap[:body_center[0],body_center[1]:,:body_center[2]] == 9] = 4
-model_labelmap[:body_center[0],body_center[1]:,body_center[2]:][model_labelmap[:body_center[0],body_center[1]:,body_center[2]:] == 9] = 5
-model_labelmap[body_center[0]:,:body_center[1],:body_center[2]][model_labelmap[body_center[0]:,:body_center[1],:body_center[2]] == 9] = 6
-model_labelmap[body_center[0]:,:body_center[1],body_center[2]:][model_labelmap[body_center[0]:,:body_center[1],body_center[2]:] == 9] = 7
-model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]] == 9] = 8
+# model_labelmap = model_labelmap + 8
+# model_labelmap[model_labelmap.shape[1]//2:,:,:][model_labelmap[model_labelmap.shape[1]//2:,:,:] == 8] = 1
+# model_labelmap[model_labelmap == 8] = 0
+# # Splitting the body into 8 cubes, based on centroid
+# model_labelmap[:body_center[0],:body_center[1],:body_center[2]][model_labelmap[:body_center[0],:body_center[1],:body_center[2]] == 9] = 2
+# model_labelmap[:body_center[0],:body_center[1],body_center[2]:][model_labelmap[:body_center[0],:body_center[1],body_center[2]:] == 9] = 3
+# model_labelmap[:body_center[0],body_center[1]:,:body_center[2]][model_labelmap[:body_center[0],body_center[1]:,:body_center[2]] == 9] = 4
+# model_labelmap[:body_center[0],body_center[1]:,body_center[2]:][model_labelmap[:body_center[0],body_center[1]:,body_center[2]:] == 9] = 5
+# model_labelmap[body_center[0]:,:body_center[1],:body_center[2]][model_labelmap[body_center[0]:,:body_center[1],:body_center[2]] == 9] = 6
+# model_labelmap[body_center[0]:,:body_center[1],body_center[2]:][model_labelmap[body_center[0]:,:body_center[1],body_center[2]:] == 9] = 7
+# model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]] == 9] = 8
 #display_volume(model_dummy, cmap="gray", title="Model Input")
 #display_volume(model_labelmap, cmap=color_map, title="Model Input")
 #print("Model:",represent_srg(model_graph, class_names=class_names))
@@ -134,7 +134,7 @@ for a in all_as:
             dice_liver = dice_coefficient(joined_labelmap==11, model_labelmap == 11)
             dice_average = np.mean([dice_coefficient(joined_labelmap==label, model_labelmap == label) for label in range(len(model_graph.vertices))])
 
-            #print("Initial Solution (Costs: {:.3f},{:.3f}, liver Dice: {:.3f}, avg Dice: {:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs), dice_liver, dice_average))
+            # print("Initial Solution (Costs: {:.3f},{:.3f}, liver Dice: {:.3f}, avg Dice: {:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs), dice_liver, dice_average))
             #print("Observation:",represent_srg(observation_graph, class_names=class_names))
             #display_volume(joined_labelmap, cmap=color_map, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 
@@ -143,8 +143,8 @@ for a in all_as:
             dices_average_rep.append(dice_average)
             regions_rep.append(regions_count)
             times_rep.append(time()-t0)
-        np.save("results/supersegmentation/{}_{}-costs.npy".format(a, f), costs_rep)
-        np.save("results/supersegmentation/{}_{}-regions.npy".format(a, f), regions_rep)
-        np.save("results/supersegmentation/{}_{}-times.npy".format(a, f), times_rep)
-        np.save("results/supersegmentation/{}_{}-dices_liver.npy".format(a, f), dices_liver_rep)
-        np.save("results/supersegmentation/{}_{}-dices_average.npy".format(a, f), dices_average_rep)
+        np.save("results/supersegmentation/{}_{}-costs.npy".format(a.__name__, f), costs_rep)
+        np.save("results/supersegmentation/{}_{}-regions.npy".format(a.__name__, f), regions_rep)
+        np.save("results/supersegmentation/{}_{}-times.npy".format(a.__name__, f), times_rep)
+        np.save("results/supersegmentation/{}_{}-dices_liver.npy".format(a.__name__, f), dices_liver_rep)
+        np.save("results/supersegmentation/{}_{}-dices_average.npy".format(a.__name__, f), dices_average_rep)
