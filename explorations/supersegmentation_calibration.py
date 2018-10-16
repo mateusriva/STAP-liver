@@ -131,7 +131,7 @@ for a in all_as:
             vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
             edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
 
-            dice_liver = dice_coefficient(joined_labelmap==11, model_labelmap == 11)
+            dice_liver = dice_coefficient(joined_labelmap==3, model_labelmap == 3)
             dice_average = np.mean([dice_coefficient(joined_labelmap==label, model_labelmap == label) for label in range(len(model_graph.vertices))])
 
             # print("Initial Solution (Costs: {:.3f},{:.3f}, liver Dice: {:.3f}, avg Dice: {:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs), dice_liver, dice_average))
