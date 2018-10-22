@@ -264,6 +264,6 @@ for w in all_ws:
             dices_liver_rep.append(dice_liver)
             dices_average_rep.append(dice_average)
 
-        # np.save("results/weights/{}_{}-costs.npy".format(w, f), costs_rep)
-        # np.save("results/weights/{}_{}-dices_liver.npy".format(w, f), dices_liver_rep)
-        # np.save("results/weights/{}_{}-dices_average.npy".format(w, f), dices_average_rep)
+        np.save("results/weights/{}_{}-costs.npy".format(w, f), costs_rep)
+        np.save("results/weights/{}_{}-dices_liver.npy".format(w, f), dices_liver_rep)
+        np.save("results/weights/{}_{}-dices_average.npy".format(w, f), dices_average_rep)
