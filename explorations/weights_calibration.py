@@ -28,8 +28,9 @@ def get_weights(experiment):
 graph_weights = (1,1)
 
 all_ws=range(11)
-all_fs=[0,1,2,4]
-repetitions=1
+# all_fs=[0,1,2,4]
+all_fs=[4]
+repetitions=10
 
 # Step 1
 model_dummy, model_labelmap = generate_liver_phantom_dummy()
@@ -184,7 +185,11 @@ for w in all_ws:
             vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.vertices, weights=vertex_weights)
             edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
 
+            # dice_liver = dice_coefficient(joined_labelmap==11, model_labelmap == 11)
+            # dice_average = np.mean([dice_coefficient(joined_labelmap==label, model_labelmap == label) for label in range(len(model_graph.vertices))])
+
             # display_volume(joined_labelmap, cmap=color_map, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+            # print("After contiguity: Cost {:.3f} LivSI {:.2f} AvgSI {:.2f}".format((np.mean(vertex_costs) + np.mean(edge_costs))/2,dice_liver, dice_average))
 
             # Step 7: Region Joining TODO: add above?
             # -----------------------
@@ -253,10 +258,12 @@ for w in all_ws:
             dice_liver = dice_coefficient(joined_labelmap==11, model_labelmap == 11)
             dice_average = np.mean([dice_coefficient(joined_labelmap==label, model_labelmap == label) for label in range(len(model_graph.vertices))])
 
+            # print("After improvement: Cost {:.3f} LivSI {:.2f} AvgSI {:.2f}".format((np.mean(vertex_costs) + np.mean(edge_costs))/2,dice_liver, dice_average))
+
             costs_rep.append((np.mean(vertex_costs) + np.mean(edge_costs))/2)
             dices_liver_rep.append(dice_liver)
             dices_average_rep.append(dice_average)
 
-        np.save("results/weights/{}_{}-costs.npy".format(w, f), costs_rep)
-        np.save("results/weights/{}_{}-dices_liver.npy".format(w, f), dices_liver_rep)
-        np.save("results/weights/{}_{}-dices_average.npy".format(w, f), dices_average_rep)
+        # np.save("results/weights/{}_{}-costs.npy".format(w, f), costs_rep)
+        # np.save("results/weights/{}_{}-dices_liver.npy".format(w, f), dices_liver_rep)
+        # np.save("results/weights/{}_{}-dices_average.npy".format(w, f), dices_average_rep)
