@@ -4,8 +4,8 @@ and for putting them through the segmentation pipeline."""
 
 from calibration_functions import *
 
-initial_weights = (1,1,1,7)
-vertex_weights = (1,1,1,7,1)
+initial_weights = (1,1,1,1)
+vertex_weights = (1,1,1,2,1)
 edge_weights = (1,1,1,1,1)
 graph_weights = (1,1)
 
@@ -48,22 +48,18 @@ print("Model:",represent_srg(model_graph, class_names=class_names))
 # Step 3: Generating observation
 # -----------------------
 # Applying gradient
+
 smoothed = ndi.gaussian_filter(observation_dummy, (5,5,1))
-#display_volume(smoothed, cmap="gray")
+# Gradient (magnitude of sobel)
 magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(smoothed, axis=1)**2 + ndi.filters.sobel(smoothed, axis=2)**2)
-#display_volume(magnitude, cmap="gray", title="Magnitude")
-# Getting local minima of the volume with a structural element 5x5x1
-#volume_local_minima = local_minima(magnitude)
-# volume_local_minima = h_minima(magnitude, h=0.1)
-#display_volume(volume_local_minima)
-# Labeling local_minima
-# markers, total_markers = ndi.label(volume_local_minima)
-# observed_labelmap = watershed(magnitude,markers=markers)-1
-observed_labelmap = watershed(magnitude, markers=500, compactness=0.001)-1
-# observed_labelmap = skis.slic(observation_dummy, n_segments=500,
-                    # compactness=0.0001, multichannel=False, sigma=(5,5,1))
-# display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
-# display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
+# Seeding
+markers=anisotropic_seeds(observation_dummy.shape, (10,10,8))
+markers, regions_count = ndi.label(markers)
+# Computing
+observed_labelmap = watershed(magnitude, markers=markers, compactness=0.001)-1
+#display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
+#display_segments_as_lines(np.rollaxis(observation_dummy, 2).transpose([0,2,1]), np.rollaxis(observed_labelmap, 2).transpose([0,2,1]), width=1, level=0.5)
+#display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
 #display_overlayed_volume(observation_dummy, observed_labelmap, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
 # Step 4: Generating super-observation graph
@@ -86,8 +82,6 @@ for i, super_vertex in enumerate(super_graph.vertices):
 # print("Initial solution:")
 # for i, prediction in enumerate(solution):
 #     print("\t{}: {}".format(i, prediction))
-
-#solution = np.array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,       1., 1., 1., 1., 1., 0., 1., 1., 1., 1., 0., 1., 1., 1., 1., 1., 1.,       1., 1., 1., 1., 0., 1., 1., 1., 1., 1., 1., 0., 0., 1., 1., 1., 0.,       1., 1., 1., 0., 0., 0., 4., 1., 1., 1., 0., 0., 0., 1., 1., 4., 1.,       0., 1., 0., 3., 1., 1., 3., 4., 4., 3., 1., 1., 0., 1., 1., 1., 3.,       1., 1., 4., 4., 0., 3., 1., 4., 2., 4., 2., 1., 4., 4., 1., 1., 1.,       1., 1., 4., 1., 1., 1., 1., 1., 1., 4., 1., 1., 1., 1., 1., 1., 1.,       1., 1., 4., 1., 1., 4., 1., 1., 4., 4., 4., 4., 1., 4., 4., 4., 1.,       4., 0., 1., 1., 1., 4., 4., 4., 4., 1., 4., 4., 4., 4., 4., 4., 4.,       4., 1., 1., 4., 4., 4., 4., 1., 4., 4., 4., 4., 4., 4., 4., 4., 4.,       4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4., 4.,       4., 4., 4., 4., 4., 4., 4., 4., 4., 4.])
 
 # Step 6: Contiguity guarantee
 # -----------------------
@@ -182,7 +176,7 @@ print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
 # Step 8: Improvement
 # -----------------------
-total_epochs = len(solution)
+total_epochs = len(solution)//2
 improvement_cutoff = 1#len(solution) # TODO: convergence? cutoff by cost difference?
 for epoch in range(total_epochs):
     # attempting to improve each vertex, starting from the most expensive
