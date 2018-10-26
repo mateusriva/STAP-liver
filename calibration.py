@@ -5,12 +5,12 @@ and for putting them through the segmentation pipeline."""
 from calibration_functions import *
 
 initial_weights = (1,1,1,1)
-vertex_weights = (1,1,1,2,1)
+vertex_weights = (2,1,1,1,1)
 edge_weights = (1,1,1,1,1)
 graph_weights = (1,1)
 
-w=4
-f=0
+w=1
+f=4
 
 #if __name__ == '__main__':
 # Step 1: Loading data (generating dummies)
@@ -38,7 +38,7 @@ model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[b
 #observation_dummy = generate_dummy(2)
 #observation_dummy = np.random.normal(model_dummy, 20)
 #observation_dummy = deepcopy(model_dummy)
-observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.00000, seed=0)
+observation_dummy = generate_fat_salt_and_pepper_noise(model_dummy, radius=7,amount=0.00004, seed=0)
 observation_dummy[np.logical_or(model_labelmap == 0, model_labelmap == 1)] = 0
 #observation_dummy = random_noise(model_dummy, "speckle", seed=10) #amount=0.05)
 # display_volume(observation_dummy, cmap="gray", title="Observation Input")
