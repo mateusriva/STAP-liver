@@ -9,8 +9,8 @@ Authors:
 
 from liver_full_functions import *
 
-initial_weights = (1,1,1,1)
-vertex_weights = (1,1,1,1,10)
+initial_weights = (1,1,1,2)
+vertex_weights = (1,1,1,2,1)
 edge_weights = (1,1,1,1,1)
 graph_weights = (1,1)
 
@@ -60,7 +60,7 @@ smoothed = smoothed/np.max(smoothed) # normalization for magnitude
 magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(smoothed, axis=1)**2 + ndi.filters.sobel(smoothed, axis=2)**2)
 #display_volume(magnitude, cmap="gray", title="Magnitude")
 observed_labelmap_data = watershed(magnitude, markers=500, compactness=0.001)-1
-display_segments_as_lines(observation_volume.data, observed_labelmap_data)
+# display_segments_as_lines(observation_volume.data, observed_labelmap_data)
 #display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(255,3)))
 #display_overlayed_volume(observation_volume.data, observed_labelmap_data, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
@@ -171,7 +171,7 @@ dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)
 print("Contiguous Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
-display_volume(joined_labelmap_data, cmap=class_colors, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+# display_volume(joined_labelmap_data, cmap=class_colors, title="Contiguous Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 
 
 # Step 6: Region Joining
@@ -185,12 +185,12 @@ vertex_costs = compute_vertex_cost(observation_graph.vertices, model_graph.verti
 edge_costs = compute_edge_cost(observation_graph.edges, model_graph.edges, weights=edge_weights)
 dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
 print("Joined Initial Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(np.mean(vertex_costs),np.mean(edge_costs), dice))
-display_volume(joined_labelmap_data, cmap=class_colors, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
+# display_volume(joined_labelmap_data, cmap=class_colors, title="Joined Initial Solution (Costs: {:.3f},{:.3f})".format(np.mean(vertex_costs),np.mean(edge_costs)))
 print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
 # Step 7: Improvement
 # -----------------------
-total_epochs = len(solution)//4
+total_epochs = len(solution)//2
 improvement_cutoff = 1#len(solution) # TODO: convergence? cutoff by cost difference?
 for epoch in range(total_epochs):
     # attempting to improve each vertex, starting from the most expensive
@@ -251,7 +251,7 @@ for epoch in range(total_epochs):
 
 dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
 print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
-display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
+# display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
 
 # Step 8: Outputting bounding box of liver
 # -----------------------
@@ -260,4 +260,8 @@ bounding_box = (liver_points.min(axis=0),liver_points.max(axis=0))
 print("=========================\nFound liver bounding box: {}".format(bounding_box))
 
 
-# TODO: histogramas dos atributos
+# saving NRRDs
+import nrrd
+nrrd.write("patient4_t2.nrrd", model_volume.data)
+nrrd.write("patient4_truth.nrrd", model_labelmap.data)
+nrrd.write("patient4_prediction.nrrd", joined_labelmap_data)
