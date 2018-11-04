@@ -54,14 +54,20 @@ print("Model:",represent_srg(model_graph, class_names=class_names))
 # Step 3: Generating observation
 # -----------------------
 # Applying gradient
-smoothed = ndi.gaussian_filter(observation_volume.data, (3,3,1))
-smoothed = smoothed/np.max(smoothed) # normalization for magnitude
-#display_volume(smoothed, cmap="gray")
+smoothed = ndi.gaussian_filter(observation_volume.data, (5,5,3))
+smoothed = smoothed/np.max(smoothed)
+# Gradient (magnitude of sobel)
 magnitude = np.sqrt(ndi.filters.sobel(smoothed, axis=0)**2 + ndi.filters.sobel(smoothed, axis=1)**2 + ndi.filters.sobel(smoothed, axis=2)**2)
-#display_volume(magnitude, cmap="gray", title="Magnitude")
-observed_labelmap_data = watershed(magnitude, markers=500, compactness=0.001)-1
+# Seeding
+markers=anisotropic_seeds(observation_volume.data.shape, (10,10,8))
+markers, regions_count = ndi.label(markers)
+# Computing
+observed_labelmap_data = watershed(magnitude, markers=markers, compactness=0.001)-1
 # display_segments_as_lines(observation_volume.data, observed_labelmap_data)
-#display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(255,3)))
+display_segments_as_lines(np.repeat(np.rollaxis(observation_volume.data, 2).transpose([1,0,2]), 5, axis=1), np.repeat(np.rollaxis(observed_labelmap_data, 2).transpose([1,0,2]), 5, axis=1))
+# display_volume(observed_labelmap_data,cmap=ListedColormap(np.random.rand(255,3)))
+import sys
+sys.exit()
 #display_overlayed_volume(observation_volume.data, observed_labelmap_data, label_colors=np.random.rand(255,3),width=1,level=0.5)
 
 # Step 4: Generating super-observation graph
@@ -250,8 +256,8 @@ for epoch in range(total_epochs):
     print("Observation:",represent_srg(observation_graph, class_names=class_names))
 
 dice = (2. * np.logical_and(joined_labelmap_data==10, model_labelmap.data == 10)).sum()/((joined_labelmap_data==10).sum() + (model_labelmap.data == 10).sum())
-print("Epoch {} Solution (Costs: {:.3f},{:.3f}), Dice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice))
-# display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
+dice_average = np.mean([dice_coefficient(joined_labelmap_data==label, model_labelmap.data == label) for label in range(len(model_graph.vertices))])
+print("Epoch {} Solution (Costs: {:.3f},{:.3f}), LiverDice: {:.4f}, AvgDice: {:.4f}".format(epoch, np.mean(vertex_costs),np.mean(edge_costs), dice, dice_average))
 
 # Step 8: Outputting bounding box of liver
 # -----------------------
@@ -265,3 +271,5 @@ import nrrd
 nrrd.write("patient4_t2.nrrd", model_volume.data)
 nrrd.write("patient4_truth.nrrd", model_labelmap.data)
 nrrd.write("patient4_prediction.nrrd", joined_labelmap_data)
+
+display_volume(joined_labelmap_data, cmap=class_colors, title="Epoch {} Solution (Costs: {:.3f},{:.3f})".format(epoch, np.mean(vertex_costs),np.mean(edge_costs)))
