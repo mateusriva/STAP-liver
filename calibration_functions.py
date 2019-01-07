@@ -15,8 +15,8 @@ import skimage.future.graph as rag
 
 from srg import SRG
 from display_utils import display_volume, display_segments_as_lines, display_solution, represent_srg, display_overlayed_volume
-color_map = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(1,0,0),(0,1,0)])
-class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Vena Cava", "Full Liver"]
+color_map = ListedColormap([(0,0,0),(0.1,0.1,0.1),(0.40,0.40,0.40),(0.42,0.42,0.42),(0.44,0.44,0.44),(0.46,0.46,0.46),(0.48,0.48,0.48),(0.50,0.50,0.50),(0.52,0.52,0.52),(0.54,0.54,0.54),(1,0,0),(0,1,0),(0,0,1),(0,1,1)])
+class_names = ["BG Posterior","BG Anterior", "BG Body1  ", "BG Body2  ", "BG Body3  ", "BG Body4  ", "BG Body5  ", "BG Body6  ", "BG Body7  ", "BG Body8  ", "Vena Cava", "Full Liver", "Vertebrae", "Spinal Cord"]
 
 def generate_dummy(flavor):
     """Generates dummy data.
@@ -121,11 +121,17 @@ def generate_liver_phantom_dummy():
     dummy[np.nonzero(ball_adder)] = (0.3)
     # Adding VC
     dummy[140:-140,170:-110,:-5] = 0.8
+    # Adding vertebrae
+    dummy[210:-70,140:-140,:] = 0.4
+    # Adding spinal cord
+    dummy[225:-65,145:-145,:] = 0.9
 
     labelmap = np.zeros_like(dummy)
     labelmap[dummy==0.5] = 1
     labelmap[dummy==0.8] = 2
     labelmap[dummy==0.3] = 3
+    labelmap[dummy==0.4] = 4
+    labelmap[dummy==0.9] = 5
 
     return dummy, labelmap
 

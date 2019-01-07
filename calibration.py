@@ -4,8 +4,8 @@ and for putting them through the segmentation pipeline."""
 
 from calibration_functions import *
 
-initial_weights = (1,1,1,2)
-vertex_weights = (1,1,1,2,1)
+initial_weights = (1,1,1,1)
+vertex_weights = (1,1,1,1,1)
 edge_weights = (1,1,1,1,1)
 graph_weights = (1,1)
 
@@ -33,7 +33,7 @@ model_labelmap[body_center[0]:,:body_center[1],:body_center[2]][model_labelmap[b
 model_labelmap[body_center[0]:,:body_center[1],body_center[2]:][model_labelmap[body_center[0]:,:body_center[1],body_center[2]:] == 9] = 7
 model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]][model_labelmap[body_center[0]:,body_center[1]:,:body_center[2]] == 9] = 8
 #model_labelmap[body_center[0]:,body_center[1]:,body_center[2]:][model_labelmap[body_center[0]:,body_center[1]:,body_center[2]:] == 9] = 9
-#display_volume(model_dummy, cmap="gray", title="Model Input")
+# display_volume(model_dummy, cmap="gray", title="Model Input")
 # display_volume(model_labelmap, cmap=color_map, title="Model Input")
 #observation_dummy = generate_dummy(2)
 #observation_dummy = np.random.normal(model_dummy, 20)
@@ -60,7 +60,7 @@ markers=anisotropic_seeds(observation_dummy.shape, (10,10,8))
 markers, regions_count = ndi.label(markers)
 # Computing
 observed_labelmap = watershed(magnitude, markers=markers, compactness=0.001)-1
-#display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
+# display_segments_as_lines(observation_dummy, observed_labelmap, width=1, level=0.5)
 #display_segments_as_lines(np.rollaxis(observation_dummy, 2).transpose([0,2,1]), np.rollaxis(observed_labelmap, 2).transpose([0,2,1]), width=1, level=0.5)
 #display_volume(observed_labelmap,cmap=ListedColormap(np.random.rand(255,3)))
 #display_overlayed_volume(observation_dummy, observed_labelmap, label_colors=np.random.rand(255,3),width=1,level=0.5)
@@ -70,7 +70,7 @@ observed_labelmap = watershed(magnitude, markers=markers, compactness=0.001)-1
 super_graph = build_graph(observation_dummy, observed_labelmap, add_edges=False)
 super_graph = normalize_graph(super_graph,mean_vertex, std_vertex, mean_edge, std_edge)
 super_adjacency = rag.RAG(observed_labelmap)
-#print("Superobservation:",represent_srg(super_graph))
+# print("Superobservation:",represent_srg(super_graph))
 
 # Step 5: Generating initial solution
 # -----------------------
@@ -110,6 +110,8 @@ for label, model_vertex in enumerate(model_graph.vertices):
     # Marking other regions for improvement
     solution[label_regions] = -1
     solution[correct_vertexes] = label
+    print("Label {} core: {}".format(label, correct_vertexes[0]))
+    print("Label {} noncontiguous: {}".format(label, label_regions))
 
 # Running improvement for non-contiguous regions
 joined_labelmap = np.zeros_like(observed_labelmap)
